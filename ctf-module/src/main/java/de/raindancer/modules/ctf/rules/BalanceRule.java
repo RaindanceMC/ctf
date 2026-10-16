@@ -90,6 +90,19 @@ public final class BalanceRule implements ICtfRule {
     }
 
     /** Whether somebody may move from one side to another without tipping the balance. */
+    /** Whether {@code side} is one player alone against a side of two or more — they get a little help. */
+    public boolean alone(int side, int[] sizes) {
+        if (side < 0 || side >= sizes.length || sizes[side] != 1) {
+            return false;
+        }
+        for (int other = 0; other < sizes.length; other++) {
+            if (other != side && sizes[other] >= 2) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public boolean maySwitch(int[] sizes, int from, int to) {
         return from != to && sizes[to] < sizes[from];
     }

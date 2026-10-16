@@ -29,6 +29,7 @@ ctf:
     closed: "<gray>The vote is closed."
 
   round:
+    alone: "<gray>You are alone on your side — <green>two hearts more</green> and a little <aqua>speed</aqua> to even it out."
     started: "<gold><bold>Capture the Flag!</bold> <gray>Map <white><map></white><author> · <white><type></white><newline><gray>You play for <side><gray>. First to <white><goal></white> captures wins."
     twist: "<light_purple><bold>Twist:</bold> <white><twist></white> <gray>— <how>"
     joined-late: "<gray>You join the round for <side><gray>."

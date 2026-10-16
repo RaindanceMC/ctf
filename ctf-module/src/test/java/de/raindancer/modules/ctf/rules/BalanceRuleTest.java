@@ -113,4 +113,14 @@ class BalanceRuleTest {
         List<UUID> all = players(3);
         assertThat(rule.guildSides(all, Map.of(all.get(0), "a"))).isEmpty();
     }
+
+    @Test
+    @DisplayName("somebody alone on their side against a side of two or more gets a little help")
+    void alone() {
+        assertThat(rule.alone(0, new int[]{1, 2})).isTrue();
+        assertThat(rule.alone(0, new int[]{1, 1})).as("one against one is fair").isFalse();
+        assertThat(rule.alone(1, new int[]{1, 3})).as("the bigger side").isFalse();
+        assertThat(rule.alone(0, new int[]{2, 3})).as("two are not alone").isFalse();
+        assertThat(rule.alone(2, new int[]{3, 0, 1})).isTrue();
+    }
 }

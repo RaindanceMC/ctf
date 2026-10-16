@@ -242,6 +242,59 @@ public final class RoundService implements ICtfService {
         return rewind;
     }
 
+    /** Two hearts more for somebody alone on their side against two or more. */
+    static final double ALONE_HEALTH = 4;
+    /** Who was told they are alone — once, not every life. */
+    private final java.util.Set<UUID> toldAlone = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    private static final org.bukkit.NamespacedKey ALONE =
+            java.util.Objects.requireNonNull(org.bukkit.NamespacedKey.fromString("rainsctf:alone"));
+
+    /**
+     * A little help for somebody alone on their side against a side of two or more: two hearts more and Speed I —
+     * looked at again on every life, so it goes once somebody joins them. Their own thread, after the kit.
+     */
+    private void alone(Player player, Round now, int side) {
+        removeAloneBuff(player);
+        int[] sizes;
+        synchronized (now) {
+            sizes = new int[now.sides().size()];
+            for (int index = 0; index < sizes.length; index++) {
+                sizes[index] = now.onSide(index).size();
+            }
+        }
+        if (!balance.alone(side, sizes)) {
+            toldAlone.remove(player.getUniqueId());
+            return;
+        }
+        var health = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH);
+        if (health != null) {
+            health.addModifier(new org.bukkit.attribute.AttributeModifier(ALONE, ALONE_HEALTH,
+                    org.bukkit.attribute.AttributeModifier.Operation.ADD_NUMBER,
+                    org.bukkit.inventory.EquipmentSlotGroup.ANY));
+            player.setHealth(health.getValue());
+        }
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, PotionEffect.INFINITE_DURATION, 0, false,
+                false, true));
+        if (toldAlone.add(player.getUniqueId())) {
+            messages.send(player, "ctf.round.alone");
+        }
+    }
+
+    /** Out of the round: the buff goes, and the next round tells them again. Their own thread. */
+    private void notAlone(Player player) {
+        toldAlone.remove(player.getUniqueId());
+        removeAloneBuff(player);
+    }
+
+    private void removeAloneBuff(Player player) {
+        var health = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH);
+        if (health != null && health.getModifier(ALONE) != null) {
+            health.removeModifier(ALONE);
+            player.setHealth(Math.min(player.getHealth(), health.getValue()));
+            player.removePotionEffect(PotionEffectType.SPEED);
+        }
+    }
+
     /** Building in this round: the map's own rule if it has one, else the server's setting. */
     public Building building(Round now) {
         return now.map().rules().building(settings.building());
@@ -301,6 +354,7 @@ public final class RoundService implements ICtfService {
         scoreboards.clear(id, OWNER);
         bossBars.clear(id, OWNER);
         mutators.remove(player);
+        notAlone(player);
         parties.leave(id);
         votes.forget(id);
         lobby.leave(player);
@@ -1022,6 +1076,7 @@ public final class RoundService implements ICtfService {
                 roles.equip(player, role, colour, now.mutator(),
                         building(now) != Building.NONE ? now.map().rules().blocks() : 0);
                 mutators.apply(player, now.mutator());
+                alone(player, now, fighter.side());
                 giveCompass(player, now);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 50, 4, false, false, true));
                 player.setFallDistance(0);
@@ -1552,6 +1607,7 @@ public final class RoundService implements ICtfService {
                         roles.equip(player, role, side.colour(), mutator,
                                 map.rules().building(settings.building()) != Building.NONE ? map.rules().blocks() : 0);
                         mutators.apply(player, mutator);
+                        alone(player, fresh, fighter.side());
                         giveCompass(player, fresh);
                         messages.send(player, "ctf.round.started", "map", map.title(), "author",
                                 map.author().isBlank() ? "" : " by " + map.author(), "type", typeLine,
@@ -1836,6 +1892,7 @@ public final class RoundService implements ICtfService {
             scoreboards.clear(id, OWNER);
             Scheduling.entity(plugin, player, () -> {
                 mutators.remove(player);
+                notAlone(player);
                 if (lobby.isInside(id)) {
                     lobby.reset(player);
                     player.teleportAsync(lobby.spawn());
