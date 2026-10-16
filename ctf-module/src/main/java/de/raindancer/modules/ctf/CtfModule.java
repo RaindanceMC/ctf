@@ -70,7 +70,7 @@ import java.util.UUID;
  */
 public final class CtfModule implements FlexModule {
 
-    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.3.0")
+    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.4.0")
             .describedAs("Capture the Flag with classes, power-ups, twists, votes, awards, levels and challenges")
             .by("Raindancer118");
 
