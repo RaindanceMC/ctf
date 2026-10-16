@@ -84,4 +84,27 @@ class MapStoreTest {
         Files.writeString(folder.resolve("b.yml"), "");
         assertThat(new MapStore(folder).schematics()).containsExactly("a.schem");
     }
+
+    @Test
+    @DisplayName("a map may bring its own building rule and blocks for everybody; without, the server's setting rules")
+    void buildingPerMap() throws Exception {
+        Files.writeString(folder.resolve("wall.yml"), String.join("\n",
+                "file: wall.schem", "size: 40 1 9", "building: own_blocks", "blocks: 48", ""));
+        CtfMap wall = new MapStore(folder).load("wall").orElseThrow();
+        assertThat(wall.rules().building()).contains(de.raindancer.modules.ctf.model.Building.OWN_BLOCKS);
+        assertThat(wall.rules().blocks()).isEqualTo(48);
+        assertThat(wall.rules().building(de.raindancer.modules.ctf.model.Building.NONE))
+                .isEqualTo(de.raindancer.modules.ctf.model.Building.OWN_BLOCKS);
+
+        Files.writeString(folder.resolve("plain.yml"), "file: plain.schem\nsize: 40 1 9\n");
+        CtfMap plain = new MapStore(folder).load("plain").orElseThrow();
+        assertThat(plain.rules().building()).isEmpty();
+        assertThat(plain.rules().blocks()).isZero();
+        assertThat(plain.rules().building(de.raindancer.modules.ctf.model.Building.FREE))
+                .isEqualTo(de.raindancer.modules.ctf.model.Building.FREE);
+
+        MapStore store = new MapStore(folder);
+        store.save(wall.withTitle("The Wall", "TheDumbo"));
+        assertThat(new MapStore(folder).load("wall").orElseThrow().rules()).isEqualTo(wall.rules());
+    }
 }

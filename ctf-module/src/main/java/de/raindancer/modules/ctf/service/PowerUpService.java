@@ -34,6 +34,8 @@ public final class PowerUpService implements ICtfService {
     private final Effects effects;
     private final RoleService roles;
     private final Random random = new Random();
+    private volatile java.util.function.Function<java.util.UUID, java.util.Optional<de.raindancer.modules.ctf.model.Role>> roleOf =
+            id -> java.util.Optional.empty();
     private final Pickups pickups;
     private final PickupShow show;
     private volatile CtfSettings settings;
@@ -120,6 +122,16 @@ public final class PowerUpService implements ICtfService {
                 .orElse(net.kyori.adventure.text.Component.empty());
     }
 
+    /** Who plays which class — the round knows. */
+    public void roleOf(java.util.function.Function<java.util.UUID, java.util.Optional<de.raindancer.modules.ctf.model.Role>> lookup) {
+        this.roleOf = lookup;
+    }
+
+    /** A speed power-up's potion level (0 = Speed I): scouts are made for running, so they get Speed IV. */
+    static int speedAmplifier(de.raindancer.modules.ctf.model.Role role) {
+        return role == de.raindancer.modules.ctf.model.Role.SCOUT ? 3 : 1;
+    }
+
     /** What taking one does. Their own thread. */
     private boolean give(Player player, Pickups.Pickup pickup) {
         if (SUPPLY.equals(pickup.kind())) {
@@ -129,7 +141,8 @@ public final class PowerUpService implements ICtfService {
         }
         PowerUp kind = PowerUp.parse(pickup.kind()).orElse(PowerUp.SPEED);
         switch (kind) {
-            case SPEED -> player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200, 1));
+            case SPEED -> player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 200,
+                    speedAmplifier(roleOf.apply(player.getUniqueId()).orElse(null))));
             case STRENGTH -> player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 200, 0));
             case SHIELD -> {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 300, 1));

@@ -70,7 +70,7 @@ import java.util.UUID;
  */
 public final class CtfModule implements FlexModule {
 
-    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.4.0")
+    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.5.0")
             .describedAs("Capture the Flag with classes, power-ups, twists, votes, awards, levels and challenges")
             .by("Raindancer118");
 
@@ -140,6 +140,8 @@ public final class CtfModule implements FlexModule {
                 context.core().scoreboards(), context.core().bossBars(), context.core().actionBars(), maps, arena,
                 lobby, flags, roles, powerUps, supplies, mutators, announcer, progress, parties, votes, spectators,
                 System::currentTimeMillis, now);
+        RoundService roundsNow = rounds;
+        powerUps.roleOf(id -> roundsNow.fighter(id).map(de.raindancer.modules.ctf.model.Fighter::role));
         arena.building(rounds::mayBuildAtAll);
 
         boards = new FloatingBoards(context.plugin(), server, context.dataFolder().resolve("boards.yml"), "board",

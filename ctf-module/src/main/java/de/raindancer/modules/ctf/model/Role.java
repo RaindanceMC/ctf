@@ -9,9 +9,9 @@ import java.util.Optional;
 /** A class: what somebody fights with, and what they can do besides. Picked at every respawn. */
 public enum Role {
     SOLDIER("Soldier", Material.IRON_SWORD, true, false, "Sword, bow, iron armour.", "Good at everything, best at nothing."),
-    SCOUT("Scout", Material.FEATHER, true, false, "Fast, light armour, wind charges.", "Takes a flag at once — no waiting."),
+    SCOUT("Scout", Material.FEATHER, true, false, "Fast, light armour, wind charges; speed power-ups give Speed IV.", "Takes a flag at once — no waiting."),
     TANK("Tank", Material.SHIELD, false, false, "Heavy armour and a shield, slow.", "Cannot carry a flag — escorts it."),
-    ARCHER("Archer", Material.BOW, true, false, "A strong bow and flame arrows.", "An arrow makes a carrier glow."),
+    ARCHER("Archer", Material.BOW, true, false, "A longbow and a quiver of arrows.", "An arrow makes a carrier glow."),
     MEDIC("Medic", Material.GOLDEN_APPLE, true, false, "Heals teammates near them.", "Once a life: right click a teammate to mend them."),
     ENGINEER("Engineer", Material.PISTON, true, true, "Barricades, jump pads and a turret.", "Only when building is on."),
     NINJA("Ninja", Material.ENDER_EYE, true, false, "Sneak to vanish for a moment.", "Hitting or carrying ends it."),

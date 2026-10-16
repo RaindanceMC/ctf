@@ -174,7 +174,10 @@ public final class MapStore {
                 size[2], bases, Point.parse(yaml.getString("neutral")).orElse(null),
                 Point.parse(yaml.getString("control")).orElse(null), points(yaml.getStringList("power-ups")),
                 points(yaml.getStringList("supplies")), yaml.getInt("floor", -1),
-                Point.parse(yaml.getString("spectate")).orElse(null));
+                Point.parse(yaml.getString("spectate")).orElse(null),
+                new de.raindancer.modules.ctf.model.MapRules(
+                        de.raindancer.modules.ctf.model.MapRules.read(yaml.getString("building")),
+                        yaml.getInt("blocks", 0)));
     }
 
     static void write(CtfMap map, YamlConfiguration yaml) {
@@ -183,6 +186,10 @@ public final class MapStore {
         yaml.set("author", map.author());
         yaml.set("size", map.width() + " " + map.height() + " " + map.length());
         yaml.set("floor", map.floor());
+        map.rules().building().ifPresent(rule -> yaml.set("building", rule.name().toLowerCase(Locale.ROOT)));
+        if (map.rules().blocks() > 0) {
+            yaml.set("blocks", map.rules().blocks());
+        }
         if (map.neutral() != null) {
             yaml.set("neutral", map.neutral().line());
         }

@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 public record CtfMap(String id, String file, String title, String author, int width, int height, int length,
                      List<Base> bases, Point neutral, Point control, List<Point> powerUps, List<Point> supplies,
-                     int floor, Point spectate) {
+                     int floor, Point spectate, MapRules rules) {
 
     public CtfMap {
         bases = bases == null ? List.of() : List.copyOf(bases);
@@ -24,11 +24,12 @@ public record CtfMap(String id, String file, String title, String author, int wi
         supplies = supplies == null ? List.of() : List.copyOf(supplies);
         title = title == null || title.isBlank() ? id : title;
         author = author == null ? "" : author;
+        rules = rules == null ? MapRules.NONE : rules;
     }
 
     public static CtfMap fresh(String id, String file, int width, int height, int length) {
         return new CtfMap(id, file, id, "", width, height, length, List.of(), null, null, List.of(), List.of(), -1,
-                null);
+                null, MapRules.NONE);
     }
 
     public Optional<Base> base(TeamColour colour) {
@@ -69,61 +70,66 @@ public record CtfMap(String id, String file, String title, String author, int wi
         List<Base> next = new ArrayList<>(bases.stream().filter(each -> each.colour() != base.colour()).toList());
         next.add(base);
         return new CtfMap(id, file, title, author, width, height, length, next, neutral, control, powerUps, supplies,
-                floor, spectate);
+                floor, spectate, rules);
     }
 
     public CtfMap withoutBase(TeamColour colour) {
         return new CtfMap(id, file, title, author, width, height, length,
                 bases.stream().filter(each -> each.colour() != colour).toList(), neutral, control, powerUps, supplies,
-                floor, spectate);
+                floor, spectate, rules);
     }
 
     public CtfMap withNeutral(Point at) {
         return new CtfMap(id, file, title, author, width, height, length, bases, at, control, powerUps, supplies,
-                floor, spectate);
+                floor, spectate, rules);
     }
 
     public CtfMap withControl(Point at) {
         return new CtfMap(id, file, title, author, width, height, length, bases, neutral, at, powerUps, supplies,
-                floor, spectate);
+                floor, spectate, rules);
     }
 
     public CtfMap withPowerUp(Point at) {
         List<Point> more = new ArrayList<>(powerUps);
         more.add(at);
         return new CtfMap(id, file, title, author, width, height, length, bases, neutral, control, more, supplies,
-                floor, spectate);
+                floor, spectate, rules);
     }
 
     public CtfMap withoutPowerUps() {
         return new CtfMap(id, file, title, author, width, height, length, bases, neutral, control, List.of(),
-                supplies, floor, spectate);
+                supplies, floor, spectate, rules);
     }
 
     public CtfMap withSupply(Point at) {
         List<Point> more = new ArrayList<>(supplies);
         more.add(at);
         return new CtfMap(id, file, title, author, width, height, length, bases, neutral, control, powerUps, more,
-                floor, spectate);
+                floor, spectate, rules);
     }
 
     public CtfMap withoutSupplies() {
         return new CtfMap(id, file, title, author, width, height, length, bases, neutral, control, powerUps,
-                List.of(), floor, spectate);
+                List.of(), floor, spectate, rules);
     }
 
     public CtfMap withFloor(int y) {
         return new CtfMap(id, file, title, author, width, height, length, bases, neutral, control, powerUps, supplies,
-                y, spectate);
+                y, spectate, rules);
     }
 
     public CtfMap withSpectate(Point at) {
         return new CtfMap(id, file, title, author, width, height, length, bases, neutral, control, powerUps, supplies,
-                floor, at);
+                floor, at, rules);
     }
 
     public CtfMap withTitle(String newTitle, String newAuthor) {
         return new CtfMap(id, file, newTitle, newAuthor, width, height, length, bases, neutral, control, powerUps,
-                supplies, floor, spectate);
+                supplies, floor, spectate, rules);
+    }
+
+    public CtfMap withRules(MapRules newRules) {
+        return new CtfMap(id, file, title, author, width, height, length, bases, neutral, control, powerUps, supplies,
+                floor, spectate, newRules);
     }
 }

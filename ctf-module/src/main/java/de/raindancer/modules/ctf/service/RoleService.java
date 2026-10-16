@@ -94,6 +94,27 @@ public final class RoleService implements ICtfService {
         return Optional.empty();
     }
 
+    /** The archer's longbow, after Tom's nerf (16.10.2026: was Power II, flame and 48 arrows). */
+    static final int ARCHER_POWER = 1;
+    static final boolean ARCHER_FLAME = false;
+    static final int ARCHER_ARROWS = 24;
+
+    /** The blocks a side builds with, on a map that hands them out. */
+    static Material blocksOf(TeamColour colour) {
+        return Material.valueOf(colour.dyeColour().name() + "_WOOL");
+    }
+
+    /** {@link #equip(Player, Role, TeamColour, Mutator)}, and {@code blocks} of the side's wool when the map gives them. */
+    public void equip(Player player, Role role, TeamColour colour, Mutator mutator, int blocks) {
+        equip(player, role, colour, mutator);
+        if (blocks > 0) {
+            player.getInventory().setItem(8, new ItemStack(blocksOf(colour), Math.min(blocks, 64)));
+            if (blocks > 64) {
+                player.getInventory().addItem(new ItemStack(blocksOf(colour), blocks - 64));
+            }
+        }
+    }
+
     /**
      * Dresses and arms somebody for their class, their side's colour on their head. Clears what they held. Their own
      * thread.
@@ -134,10 +155,12 @@ public final class RoleService implements ICtfService {
             }
             case ARCHER -> {
                 inventory.setItem(0, named(Material.WOODEN_SWORD, "<white>Dagger"));
-                ItemStack bow = enchanted(named(Material.BOW, "<gold>Longbow"), Enchantment.POWER, 2);
-                bow.addUnsafeEnchantment(Enchantment.FLAME, 1);
+                ItemStack bow = enchanted(named(Material.BOW, "<gold>Longbow"), Enchantment.POWER, ARCHER_POWER);
+                if (ARCHER_FLAME) {
+                    bow.addUnsafeEnchantment(Enchantment.FLAME, 1);
+                }
                 inventory.setItem(1, bow);
-                inventory.setItem(9, new ItemStack(Material.ARROW, 48));
+                inventory.setItem(9, new ItemStack(Material.ARROW, ARCHER_ARROWS));
                 inventory.setItem(EquipmentSlot.CHEST, new ItemStack(Material.CHAINMAIL_CHESTPLATE));
                 inventory.setItem(EquipmentSlot.LEGS, leather(Material.LEATHER_LEGGINGS, colour));
                 inventory.setItem(EquipmentSlot.FEET, new ItemStack(Material.CHAINMAIL_BOOTS));

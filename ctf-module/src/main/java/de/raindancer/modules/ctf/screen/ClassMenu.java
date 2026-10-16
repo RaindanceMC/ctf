@@ -36,7 +36,7 @@ public final class ClassMenu extends Menu implements ICtfScreen {
         Role[] roles = Role.values();
         for (int index = 0; index < roles.length; index++) {
             Role role = roles[index];
-            Optional<String> why = services.roles().whyNot(role, services.config().get().building(), mutator);
+            Optional<String> why = services.roles().whyNot(role, services.rounds().building(), mutator);
             List<String> lore = new ArrayList<>();
             role.lines().forEach(line -> lore.add("<gray>" + line));
             lore.add(role == current ? "<green>Your class." : "<yellow>Click to play it from your next life.");

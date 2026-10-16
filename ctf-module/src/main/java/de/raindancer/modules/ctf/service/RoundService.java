@@ -242,6 +242,17 @@ public final class RoundService implements ICtfService {
         return rewind;
     }
 
+    /** Building in this round: the map's own rule if it has one, else the server's setting. */
+    public Building building(Round now) {
+        return now.map().rules().building(settings.building());
+    }
+
+    /** Building as it stands now: the running round's, else the server's setting. */
+    public Building building() {
+        Round now = round;
+        return now == null ? settings.building() : building(now);
+    }
+
     public Optional<Round> round() {
         return Optional.ofNullable(round);
     }
@@ -995,7 +1006,7 @@ public final class RoundService implements ICtfService {
                 continue;
             }
             fighter.takeNextRole();
-            if (!roles.playable(fighter.role(), settings.building(), now.mutator())) {
+            if (!roles.playable(fighter.role(), building(now), now.mutator())) {
                 fighter.forceRole(settings.defaultClass());
             }
             respawning.add(fighter.id());
@@ -1008,7 +1019,8 @@ public final class RoundService implements ICtfService {
                     return;
                 }
                 player.setGameMode(gameMode(now));
-                roles.equip(player, role, colour, now.mutator());
+                roles.equip(player, role, colour, now.mutator(),
+                        building(now) != Building.NONE ? now.map().rules().blocks() : 0);
                 mutators.apply(player, now.mutator());
                 giveCompass(player, now);
                 player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 50, 4, false, false, true));
@@ -1024,7 +1036,7 @@ public final class RoundService implements ICtfService {
     }
 
     private GameMode gameMode(Round now) {
-        return settings.building() != Building.NONE || now.mutator().needsBreaking()
+        return building(now) != Building.NONE || now.mutator().needsBreaking()
                 ? GameMode.SURVIVAL : GameMode.ADVENTURE;
     }
 
@@ -1494,7 +1506,7 @@ public final class RoundService implements ICtfService {
             }
             Role role = pickOf(entry.getKey());
             Fighter fighter = new Fighter(entry.getKey(), player.getName(), entry.getValue(), role, time);
-            if (!roles.playable(role, settings.building(), mutator)) {
+            if (!roles.playable(role, map.rules().building(settings.building()), mutator)) {
                 fighter.forceRole(settings.defaultClass());
             }
             fresh.add(fighter);
@@ -1537,7 +1549,8 @@ public final class RoundService implements ICtfService {
             Scheduling.entity(plugin, player, () -> player.teleportAsync(spawn).thenRun(() ->
                     Scheduling.entity(plugin, player, () -> {
                         player.setGameMode(gameMode(fresh));
-                        roles.equip(player, role, side.colour(), mutator);
+                        roles.equip(player, role, side.colour(), mutator,
+                                map.rules().building(settings.building()) != Building.NONE ? map.rules().blocks() : 0);
                         mutators.apply(player, mutator);
                         giveCompass(player, fresh);
                         messages.send(player, "ctf.round.started", "map", map.title(), "author",
@@ -1616,7 +1629,7 @@ public final class RoundService implements ICtfService {
             int side = balance.lateSide(sizes, wish);
             Fighter fighter = new Fighter(player.getUniqueId(), player.getName(), side, pickOf(player.getUniqueId()),
                     clock.getAsLong());
-            if (!roles.playable(fighter.role(), settings.building(), now.mutator())) {
+            if (!roles.playable(fighter.role(), building(now), now.mutator())) {
                 fighter.forceRole(settings.defaultClass());
             }
             fighter.sendBack(clock.getAsLong());
@@ -1916,7 +1929,7 @@ public final class RoundService implements ICtfService {
             if (now.fighter(player.getUniqueId()).filter(Fighter::isAlive).isEmpty()) {
                 return false;
             }
-            Building building = settings.building();
+            Building building = building(now);
             if (building == Building.NONE) {
                 return false;
             }
@@ -1958,7 +1971,7 @@ public final class RoundService implements ICtfService {
                 return buildRule.mayBreakForSpleef(block.getX(), block.getY(), block.getZ(), area(now), keepClear(now),
                         settings.keepClear());
             }
-            return buildRule.mayBreak(settings.building(), placed.contains(key(block)), block.getX(), block.getY(),
+            return buildRule.mayBreak(building(now), placed.contains(key(block)), block.getX(), block.getY(),
                     block.getZ(), area(now), keepClear(now), settings.keepClear());
         }
     }
@@ -1969,7 +1982,7 @@ public final class RoundService implements ICtfService {
         if (now == null || !now.phase().isPlaying()) {
             return false;
         }
-        boolean rules = settings.building() != Building.NONE || now.mutator().needsBreaking();
+        boolean rules = building(now) != Building.NONE || now.mutator().needsBreaking();
         return rules && isIn(player.getUniqueId());
     }
 
