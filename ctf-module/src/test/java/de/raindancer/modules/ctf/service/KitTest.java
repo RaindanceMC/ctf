@@ -33,4 +33,11 @@ class KitTest {
         assertThat(PowerUpService.speedAmplifier(Role.SOLDIER)).isEqualTo(1);
         assertThat(PowerUpService.speedAmplifier(null)).isEqualTo(1);
     }
+
+    @Test
+    @DisplayName("a ninja stays unseen and unheard for six seconds, then fifteen before the next time")
+    void vanish() {
+        assertThat(RoleService.VANISH_SECONDS).isEqualTo(6);
+        assertThat(RoleService.VANISH_COOLDOWN).isEqualTo(15);
+    }
 }

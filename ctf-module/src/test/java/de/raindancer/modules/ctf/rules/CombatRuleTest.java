@@ -51,4 +51,14 @@ class CombatRuleTest {
     void elsewhere() {
         assertThat(judge(Attack.between(RED, BLUE, "world"), false)).isNull();
     }
+
+    @org.junit.jupiter.api.Test
+    @org.junit.jupiter.api.DisplayName("hurting yourself — your own ender pearl, your own arrow — is nobody's attack, so one hit never kills you with it")
+    void ownPearl() {
+        java.util.UUID ninja = java.util.UUID.randomUUID();
+        java.util.UUID enemy = java.util.UUID.randomUUID();
+        org.assertj.core.api.Assertions.assertThat(CombatRule.attackOn(ninja, java.util.Optional.of(ninja))).isEmpty();
+        org.assertj.core.api.Assertions.assertThat(CombatRule.attackOn(ninja, java.util.Optional.of(enemy))).contains(enemy);
+        org.assertj.core.api.Assertions.assertThat(CombatRule.attackOn(ninja, java.util.Optional.empty())).isEmpty();
+    }
 }

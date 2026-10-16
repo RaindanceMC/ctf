@@ -41,6 +41,8 @@ public final class PresenceListener implements ICtfListener {
     /** What they carried before stays on disk and comes back at their next join; the round lets go of them. */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onQuit(PlayerQuitEvent event) {
+        // a ninja leaving mid-vanish must not come back silent: the flag is saved with the player
+        event.getPlayer().setSilent(false);
         services.rounds().quit(event.getPlayer().getUniqueId());
     }
 

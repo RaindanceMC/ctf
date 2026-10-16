@@ -48,7 +48,7 @@ public final class RoleService implements ICtfService {
     public static final String GRAPPLE = "grapple";
 
     /** Seconds a ninja stays unseen, and before they can vanish again. */
-    public static final int VANISH_SECONDS = 4;
+    public static final int VANISH_SECONDS = 6;
     public static final int VANISH_COOLDOWN = 15;
     /** How near a teammate has to be for the medic's aura, blocks, and how much it heals each turn. */
     public static final double AURA_RADIUS = 6;
@@ -124,6 +124,9 @@ public final class RoleService implements ICtfService {
      * thread.
      */
     public void equip(Player player, Role role, TeamColour colour, Mutator mutator) {
+        // a fresh life is never still vanished: seen and heard again
+        player.setSilent(false);
+        de.raindancer.core.social.visibility.HiddenGear.show(player);
         PlayerInventory inventory = player.getInventory();
         inventory.clear();
         player.getActivePotionEffects().stream().map(PotionEffect::getType).forEach(player::removePotionEffect);
@@ -308,6 +311,8 @@ public final class RoleService implements ICtfService {
                     false, true));
             // invisibility hides the body only: armour and what they hold would still show
             de.raindancer.core.social.visibility.HiddenGear.hide(plugin, ninja, VANISH_SECONDS * 20L);
+            // and unheard: no footsteps, no sounds of theirs
+            ninja.setSilent(true);
             ninja.getInventory().setItem(EquipmentSlot.HEAD, null);
         });
         effects.play(ninja.getUniqueId(), Cues.VANISH);
@@ -326,6 +331,7 @@ public final class RoleService implements ICtfService {
         }
         ninja.removePotionEffect(PotionEffectType.INVISIBILITY);
         de.raindancer.core.social.visibility.HiddenGear.show(ninja);
+        ninja.setSilent(false);
         if (ninja.getInventory().getItem(EquipmentSlot.HEAD).getType().isAir()) {
             ninja.getInventory().setItem(EquipmentSlot.HEAD, leather(Material.LEATHER_HELMET, colour));
         }

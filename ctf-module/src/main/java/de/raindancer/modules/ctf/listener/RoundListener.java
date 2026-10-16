@@ -90,7 +90,7 @@ public final class RoundListener implements ICtfListener {
             services.rounds().fellOff(victim);
             return;
         }
-        Optional<UUID> attacker = attacker(event);
+        Optional<UUID> attacker = de.raindancer.modules.ctf.rules.CombatRule.attackOn(id, attacker(event));
         attacker.ifPresent(by -> services.rounds().hurt(id, by));
         if (attacker.isPresent() && services.rounds().isOneHit()
                 && services.rounds().sideOf(attacker.get()).isPresent()) {

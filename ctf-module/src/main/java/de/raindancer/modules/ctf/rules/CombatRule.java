@@ -41,6 +41,11 @@ public final class CombatRule implements ICtfRule {
         return Verdict.ALLOWED;
     }
 
+    /** Who attacked {@code victim}, if anybody did: their own pearl or arrow is not an attack. */
+    public static java.util.Optional<UUID> attackOn(UUID victim, java.util.Optional<UUID> source) {
+        return source.filter(by -> !by.equals(victim));
+    }
+
     @Override
     public String describe() {
         return "only the sides of a running Capture the Flag round hurt each other";
