@@ -58,8 +58,29 @@ public final class PartyService implements ICtfService {
         return parties.stream().filter(party -> party.has(player)).findFirst();
     }
 
+    /** The parties players here made on the network (Core's /party), as last read — see {@link #network}. */
+    private volatile List<Set<UUID>> network = List.of();
+
+    /** The network's parties of the players here, read off the server thread every few seconds. */
+    public void network(List<Set<UUID>> groups) {
+        this.network = List.copyOf(groups);
+    }
+
+    /** Every group that plays on one side: parties made here and on the network, overlapping ones merged. */
     public synchronized List<Set<UUID>> all() {
-        return parties.stream().map(Party::members).toList();
+        List<Set<UUID>> groups = new java.util.ArrayList<>();
+        java.util.stream.Stream.concat(parties.stream().map(Party::members), network.stream()).forEach(group -> {
+            Set<UUID> merged = new java.util.LinkedHashSet<>(group);
+            groups.removeIf(other -> {
+                if (java.util.Collections.disjoint(other, merged)) {
+                    return false;
+                }
+                merged.addAll(other);
+                return true;
+            });
+            groups.add(merged);
+        });
+        return groups.stream().map(Set::copyOf).toList();
     }
 
     public synchronized Outcome invite(UUID from, UUID target) {

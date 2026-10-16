@@ -70,7 +70,7 @@ import java.util.UUID;
  */
 public final class CtfModule implements FlexModule {
 
-    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.9.0")
+    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.10.0")
             .describedAs("Capture the Flag with classes, power-ups, twists, votes, awards, levels and challenges")
             .by("Raindancer118");
 
@@ -133,6 +133,32 @@ public final class CtfModule implements FlexModule {
                 context.core().effects(), stats, profiles, context.core().achievements(), now);
         progress.defineAchievements();
         PartyService parties = new PartyService(System::currentTimeMillis);
+        // Core's /party is the network's: whoever is in one with somebody here plays on their side too. Read off the
+        // server thread every few seconds, so a round's start never waits on the database.
+        var networkParties = Scheduling.asyncTimer(context.plugin(), 5, 5, task ->
+                de.raindancer.core.social.friends.Socials.installed().ifPresent(socials -> {
+                    java.util.Set<java.util.UUID> here = new java.util.HashSet<>();
+                    context.plugin().getServer().getOnlinePlayers().forEach(online -> here.add(online.getUniqueId()));
+                    java.util.Set<java.util.UUID> seen = new java.util.HashSet<>();
+                    java.util.List<java.util.Set<java.util.UUID>> groups = new java.util.ArrayList<>();
+                    for (java.util.UUID player : here) {
+                        if (seen.contains(player)) {
+                            continue;
+                        }
+                        socials.parties().of(player).ifPresent(party -> {
+                            java.util.Set<java.util.UUID> together = new java.util.HashSet<>(party.members());
+                            together.retainAll(here);
+                            seen.addAll(together);
+                            if (together.size() > 1) {
+                                groups.add(together);
+                            }
+                        });
+                    }
+                    parties.network(groups);
+                }));
+        if (networkParties != null) {
+            context.closeWith(networkParties::cancel);
+        }
         VoteService votes = new VoteService(now);
         SpectatorService spectators = new SpectatorService(context.plugin(), now);
 

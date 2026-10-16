@@ -60,4 +60,18 @@ class PartyServiceTest {
         assertThat(parties.kick(amy, bob)).isTrue();
         assertThat(parties.of(amy)).isEmpty();
     }
+
+    @Test
+    @DisplayName("a party made anywhere on the network plays on one side too, merged with one made here")
+    void networkParties() {
+        java.util.UUID cleo = java.util.UUID.randomUUID();
+        java.util.UUID dan = java.util.UUID.randomUUID();
+        parties.invite(amy, bob);
+        parties.accept(bob);
+        parties.network(java.util.List.of(java.util.Set.of(cleo, dan), java.util.Set.of(bob, cleo)));
+        assertThat(parties.all()).hasSize(1);
+        assertThat(parties.all().getFirst()).containsExactlyInAnyOrder(amy, bob, cleo, dan);
+        parties.network(java.util.List.of());
+        assertThat(parties.all()).containsExactly(java.util.Set.of(amy, bob));
+    }
 }
