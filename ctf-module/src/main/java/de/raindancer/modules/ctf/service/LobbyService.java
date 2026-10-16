@@ -5,6 +5,7 @@ import de.raindancer.core.data.loadout.LoadoutStore;
 import de.raindancer.core.data.loadout.Loadouts;
 import de.raindancer.core.data.runs.Run;
 import de.raindancer.core.data.runs.RunHistory;
+import de.raindancer.core.world.movement.Parkour;
 import de.raindancer.core.platform.util.Scheduling;
 import de.raindancer.modules.ctf.CtfSettings;
 import de.raindancer.modules.ctf.model.Point;
@@ -52,10 +53,6 @@ public final class LobbyService implements ICtfService {
 
     private static final String BEFORE = "before-ctf";
 
-    /** A parkour run in progress. */
-    public record Running(long startedAt, int checkpoint) {
-    }
-
     private final Plugin plugin;
     private final LobbyStore store;
     private final LoadoutStore loadouts;
@@ -65,7 +62,7 @@ public final class LobbyService implements ICtfService {
     private final NamespacedKey itemKey;
     private final Set<UUID> inside = ConcurrentHashMap.newKeySet();
     private final Map<UUID, Loadout> kept = new ConcurrentHashMap<>();
-    private final Map<UUID, Running> parkour = new ConcurrentHashMap<>();
+    private final Parkour parkour;
     private volatile LobbyStore.Lobby lobby;
     private volatile java.util.function.Supplier<Optional<Location>> hubSpawn = Optional::empty;
     private volatile java.util.function.Predicate<World> hubWorld = world -> false;
@@ -79,6 +76,7 @@ public final class LobbyService implements ICtfService {
         this.codec = codec;
         this.runs = runs;
         this.clock = clock;
+        this.parkour = new Parkour(clock);
         this.settings = settings;
         this.itemKey = new NamespacedKey(plugin, ITEM_KEY);
         this.lobby = store.load();
@@ -217,7 +215,7 @@ public final class LobbyService implements ICtfService {
     /** Out of Capture the Flag altogether: what they carried before, where they stood before. */
     public void leave(Player player) {
         inside.remove(player.getUniqueId());
-        parkour.remove(player.getUniqueId());
+        parkour.stop(player.getUniqueId());
         if (settings.lobbyOnJoin()) {
             return;
         }
@@ -262,43 +260,36 @@ public final class LobbyService implements ICtfService {
     /** They left the server: what is kept stays on disk for their next join, and goes from memory. */
     public void forget(UUID player) {
         inside.remove(player);
-        parkour.remove(player);
+        parkour.stop(player);
         kept.remove(player);
     }
 
     // ---------------------------------------------------------------- parkour
 
-    public Optional<Running> parkourOf(UUID player) {
-        return Optional.ofNullable(parkour.get(player));
+    /** The lobby's start, checkpoints and finish as RainsCore's course. */
+    public static Parkour.Course course(LobbyStore.Lobby lobby) {
+        return new Parkour.Course(spot(lobby.parkourStart()), lobby.checkpoints().stream().map(LobbyService::spot)
+                .toList(), spot(lobby.parkourFinish()));
     }
 
-    /** A run counts at the finish only with every checkpoint reached on the way. */
-    public static boolean mayFinish(Running run, int checkpoints) {
-        return run != null && run.checkpoint() >= checkpoints;
+    private static Parkour.Spot spot(LobbyStore.Place place) {
+        return place == null ? null
+                : new Parkour.Spot(place.world(), place.point().x(), place.point().y(), place.point().z());
     }
 
-    public void startParkour(UUID player) {
-        parkour.put(player, new Running(clock.getAsLong(), 0));
-    }
-
-    public void checkpoint(UUID player, int index) {
-        parkour.computeIfPresent(player, (id, run) -> index > run.checkpoint()
-                ? new Running(run.startedAt(), index) : run);
+    /** What a move on the lobby's course meant (see {@link Parkour#moved}). */
+    public Parkour.Step parkourMove(UUID player, Location to, boolean onFoot) {
+        return parkour.moved(player, course(lobby), to.getWorld().getName(), to.getX(), to.getY(), to.getZ(), onFoot);
     }
 
     public void stopParkour(UUID player) {
-        parkour.remove(player);
+        parkour.stop(player);
     }
 
     /** Where somebody falling off goes back to: their last checkpoint, else the start. */
     public Optional<Location> parkourRespawn(UUID player) {
-        Running run = parkour.get(player);
-        if (run == null) {
-            return Optional.empty();
-        }
-        LobbyStore.Place at = run.checkpoint() > 0 && run.checkpoint() <= lobby.checkpoints().size()
-                ? lobby.checkpoints().get(run.checkpoint() - 1) : lobby.parkourStart();
-        return place(at);
+        return parkour.respawn(player, course(lobby)).flatMap(spot -> place(new LobbyStore.Place(spot.world(),
+                Point.of(spot.x(), spot.y(), spot.z()))));
     }
 
     /** A finished run, ranked. Off the server thread, as the history writes. */
