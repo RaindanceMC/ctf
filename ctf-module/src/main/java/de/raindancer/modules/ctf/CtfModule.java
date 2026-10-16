@@ -29,6 +29,7 @@ import de.raindancer.modules.ctf.screen.VoteMenu;
 import de.raindancer.modules.ctf.service.AnnouncerService;
 import de.raindancer.modules.ctf.service.ArenaWorldService;
 import de.raindancer.modules.ctf.service.FlagService;
+import de.raindancer.modules.ctf.service.HubService;
 import de.raindancer.modules.ctf.service.LobbyService;
 import de.raindancer.modules.ctf.service.MapSetupService;
 import de.raindancer.modules.ctf.service.MutatorService;
@@ -41,6 +42,7 @@ import de.raindancer.modules.ctf.service.SpectatorService;
 import de.raindancer.modules.ctf.service.SupplyService;
 import de.raindancer.modules.ctf.service.VoteService;
 import de.raindancer.modules.ctf.store.CtfDatabase;
+import de.raindancer.modules.ctf.store.HubStore;
 import de.raindancer.modules.ctf.store.LobbyStore;
 import de.raindancer.modules.ctf.store.MapStore;
 import de.raindancer.modules.ctf.store.ProfileStore;
@@ -68,7 +70,7 @@ import java.util.UUID;
  */
 public final class CtfModule implements FlexModule {
 
-    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.1.0")
+    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.2.0")
             .describedAs("Capture the Flag with classes, power-ups, twists, votes, awards, levels and challenges")
             .by("Raindancer118");
 
@@ -77,6 +79,7 @@ public final class CtfModule implements FlexModule {
     private PowerUpService powerUps;
     private FloatingBoards boards;
     private ArenaWorldService arena;
+    private HubService hub;
 
     @Override
     public ModuleInfo info() {
@@ -116,6 +119,9 @@ public final class CtfModule implements FlexModule {
         LobbyService lobby = new LobbyService(context.plugin(), new LobbyStore(context.dataFolder().resolve("lobby.yml")),
                 new LoadoutStore(context.dataFolder().resolve("kept")), Loadouts.ofTheServer(), runs,
                 System::currentTimeMillis, now);
+        HubService hub = new HubService(context.plugin(), log, new HubStore(context.dataFolder().resolve("hub")),
+                context.dataFolder().resolve("hub-built.yml"), now);
+        lobby.hub(hub::spawn, hub::isHubWorld);
         FlagService flags = new FlagService(context.plugin(), context.core().effects(), now);
         RoleService roles = new RoleService(context.plugin(), context.core().effects(), System::currentTimeMillis, now);
         powerUps = new PowerUpService(context.plugin(), context.core().effects(), roles, System::currentTimeMillis, now);
@@ -141,6 +147,7 @@ public final class CtfModule implements FlexModule {
 
         settings.onChange(fresh -> {
             arena.settings(fresh);
+            hub.settings(fresh);
             setup.settings(fresh);
             lobby.settings(fresh);
             flags.settings(fresh);
@@ -209,7 +216,7 @@ public final class CtfModule implements FlexModule {
             }
         };
         CtfServices services = new CtfServices(context.plugin(), server, log, context.core().messages(),
-                context.chat().brand(), context.core(), settings::current, maps, arena, setup, lobby, rounds, flags,
+                context.chat().brand(), context.core(), settings::current, maps, arena, setup, lobby, hub, rounds, flags,
                 roles, announcer, progress, parties, votes, spectators, stats, boards, screens);
         built[0] = services;
 
@@ -225,6 +232,18 @@ public final class CtfModule implements FlexModule {
                 settings.current().jumpPads() && (rounds.isIn(player.getUniqueId())
                         || lobby.isInside(player.getUniqueId())), 1.6, 1.1));
 
+        try {
+            Files.createDirectories(context.dataFolder().resolve("hub"));
+        } catch (IOException failure) {
+            log.error("The hub folder could not be made: {}", failure.getMessage());
+        }
+        hub.ensure(false, standing -> {
+            if (standing) {
+                log.info("The hub stands; players land at {}.", hub.spawn().map(at -> at.getBlockX() + " "
+                        + at.getBlockY() + " " + at.getBlockZ()).orElse("?"));
+            }
+        });
+        this.hub = hub;
         Scheduling.global(context.plugin(), () -> {
             arena.world();
             boards.start();
@@ -289,6 +308,9 @@ public final class CtfModule implements FlexModule {
         }
         if (arena != null) {
             arena.unlock();
+        }
+        if (hub != null) {
+            hub.unlock();
         }
     }
 }

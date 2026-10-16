@@ -116,6 +116,11 @@ public final class ArenaWorldService implements ICtfService {
             LockedWorlds.lock(plugin, world.getName(),
                     player -> isStaffBuilding(player) || mayBuild.test(player), where -> false);
         }
+        calm(world);
+    }
+
+    /** A world that stays as it was built: no day, no weather, nothing spawning, spreading or burning. */
+    public static void calm(World world) {
         world.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
         world.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
         world.setGameRule(GameRule.DO_MOB_SPAWNING, false);

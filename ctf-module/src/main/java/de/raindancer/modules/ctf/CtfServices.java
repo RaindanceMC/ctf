@@ -8,6 +8,7 @@ import de.raindancer.core.ui.messages.Messages;
 import de.raindancer.modules.ctf.service.AnnouncerService;
 import de.raindancer.modules.ctf.service.ArenaWorldService;
 import de.raindancer.modules.ctf.service.FlagService;
+import de.raindancer.modules.ctf.service.HubService;
 import de.raindancer.modules.ctf.service.LobbyService;
 import de.raindancer.modules.ctf.service.MapSetupService;
 import de.raindancer.modules.ctf.service.PartyService;
@@ -26,7 +27,7 @@ import java.util.function.Supplier;
 /** The collaborators the commands, listeners and screens are handed. */
 public record CtfServices(Plugin plugin, Server server, LogChannel log, Messages messages, Brand brand, RainsCore core,
                           Supplier<CtfSettings> config, MapStore maps, ArenaWorldService arena, MapSetupService setup,
-                          LobbyService lobby, RoundService rounds, FlagService flags, RoleService roles,
+                          LobbyService lobby, HubService hub, RoundService rounds, FlagService flags, RoleService roles,
                           AnnouncerService announcer, ProgressService progress, PartyService parties,
                           VoteService votes, SpectatorService spectators, StatsStore stats, FloatingBoards boards,
                           ICtfScreensOpener screens) {

@@ -153,7 +153,7 @@ ctf:
     challenge-done: "<green><bold>Challenge done!</bold> <white><challenge></white> <gray>(+<xp> experience)"
 
   admin:
-    usage: "<gray>/ctf admin start [map]|stop|info · map list|setup <file>|menu|reload|title <name> [by <author>]|rebuild <map>|bases <map> · board place|remove"
+    usage: "<gray>/ctf admin start [map]|stop|info|hub [build|rebuild] · map list|setup <file>|menu|reload|title <name> [by <author>]|rebuild <map>|bases <map> · board place|remove"
     starting: "<green>Starting a round."
     already-running: "<gray>A round is on already."
     stopped: "<yellow>The round is stopped."
@@ -181,6 +181,9 @@ ctf:
     board-placed: "<green>A leaderboard stands here now."
     board-removed: "<gray>The nearest leaderboard is gone."
     no-board-near: "<gray>No leaderboard within five blocks."
+    hub-building: "<yellow>Building the hub…"
+    hub-ready: "<green>The hub stands — everybody joining Capture the Flag lands there."
+    no-hub: "<gray>No hub: put a schematic and a hub.yml (file, spawn) into <white><folder></white>, then <white>/ctf admin hub build</white>."
     reloaded: "<green>Maps read again: <white><maps></white>, <white><playable></white> playable."
     info-round: "<gray>Round on <white><map></white>: <white><phase></white>, <type>, twist <twist>, score <white><score>"
     info-flag: "<gray>  flag of side <white><side></white>: <white><state></white> at <white><where></white>, carried by <white><carrier>"

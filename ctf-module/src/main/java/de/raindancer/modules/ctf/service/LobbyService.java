@@ -67,6 +67,8 @@ public final class LobbyService implements ICtfService {
     private final Map<UUID, Loadout> kept = new ConcurrentHashMap<>();
     private final Map<UUID, Running> parkour = new ConcurrentHashMap<>();
     private volatile LobbyStore.Lobby lobby;
+    private volatile java.util.function.Supplier<Optional<Location>> hubSpawn = Optional::empty;
+    private volatile java.util.function.Predicate<World> hubWorld = world -> false;
     private volatile CtfSettings settings;
 
     public LobbyService(Plugin plugin, LobbyStore store, LoadoutStore loadouts, Loadouts codec, RunHistory runs,
@@ -110,15 +112,28 @@ public final class LobbyService implements ICtfService {
         return Set.copyOf(inside);
     }
 
-    /** Where the lobby is: the set spawn, or the main world's spawn. */
+    /** The hub, once it stands: where players land, and which world it is. */
+    public void hub(java.util.function.Supplier<Optional<Location>> spawn, java.util.function.Predicate<World> world) {
+        this.hubSpawn = spawn;
+        this.hubWorld = world;
+    }
+
+    /**
+     * Where the lobby is: a spawn staff set inside the hub, else the hub's own spawn, else a spawn staff set anywhere
+     * else, else the main world's spawn.
+     */
     public Location spawn() {
         LobbyStore.Place place = lobby.spawn();
         World world = place == null ? null : Bukkit.getWorld(place.world());
-        if (world == null) {
-            World main = Bukkit.getWorlds().getFirst();
-            return main.getSpawnLocation().add(0.5, 0, 0.5);
+        Optional<Location> hub = hubSpawn.get();
+        if (world != null && (hub.isEmpty() || hubWorld.test(world))) {
+            return location(world, place.point());
         }
-        return location(world, place.point());
+        if (hub.isPresent()) {
+            return hub.get().clone();
+        }
+        World main = Bukkit.getWorlds().getFirst();
+        return main.getSpawnLocation().add(0.5, 0, 0.5);
     }
 
     public Optional<Location> place(LobbyStore.Place place) {

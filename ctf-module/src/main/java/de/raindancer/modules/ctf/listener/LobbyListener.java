@@ -87,12 +87,20 @@ public final class LobbyListener implements ICtfListener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onMove(PlayerMoveEvent event) {
-        if (!event.hasChangedBlock() || !services.config().get().parkour()) {
+        if (!event.hasChangedBlock()) {
             return;
         }
         Player player = event.getPlayer();
         UUID id = player.getUniqueId();
-        if (!services.lobby().isInside(id) || services.rounds().isIn(id)) {
+        // Off the edge of the hub: back to where everybody lands (a parkour run first goes back to its checkpoint).
+        if (services.hub().isHubWorld(player.getWorld()) && event.getTo().getY() < services.hub().fallenBelow()
+                && player.getGameMode() != org.bukkit.GameMode.SPECTATOR) {
+            Optional<Location> back = services.lobby().parkourRespawn(id);
+            player.teleportAsync(back.orElseGet(() -> services.lobby().spawn()));
+            player.setFallDistance(0);
+            return;
+        }
+        if (!services.config().get().parkour() || !services.lobby().isInside(id) || services.rounds().isIn(id)) {
             return;
         }
         if (player.getGameMode() == org.bukkit.GameMode.SPECTATOR || player.getGameMode() == org.bukkit.GameMode.CREATIVE

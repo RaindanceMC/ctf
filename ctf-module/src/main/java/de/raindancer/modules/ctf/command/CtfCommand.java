@@ -26,7 +26,7 @@ public final class CtfCommand implements ICtfCommand {
 
     private static final List<String> PLAYER = List.of("join", "leave", "vote", "class", "side", "watch", "follow",
             "stats", "top", "looks", "challenges", "party");
-    private static final List<String> ADMIN = List.of("start", "stop", "info", "map", "lobby", "board");
+    private static final List<String> ADMIN = List.of("start", "stop", "info", "hub", "map", "lobby", "board");
 
     private final Supplier<CtfServices> services;
 
@@ -189,6 +189,18 @@ public final class CtfCommand implements ICtfCommand {
                     : "ctf.admin.nothing-running");
             case "map" -> map(live, sender, Arrays.copyOfRange(args, 1, args.length));
             case "info" -> info(live, sender);
+            case "hub" -> {
+                boolean rebuild = args.length > 1 && args[1].equalsIgnoreCase("rebuild");
+                if (rebuild || args.length > 1 && args[1].equalsIgnoreCase("build")) {
+                    live.messages().send(sender, "ctf.admin.hub-building");
+                    live.hub().ensure(rebuild, standing -> live.messages().send(sender, standing
+                            ? "ctf.admin.hub-ready" : "ctf.admin.no-hub", "folder", "plugins/" + live.plugin().getName()
+                            + "/hub"));
+                } else {
+                    live.messages().send(sender, live.hub().spawn().isPresent() ? "ctf.admin.hub-ready"
+                            : "ctf.admin.no-hub", "folder", "plugins/" + live.plugin().getName() + "/hub");
+                }
+            }
             case "lobby" -> {
                 if (sender instanceof Player player) {
                     live.screens().admin(player);
@@ -345,6 +357,9 @@ public final class CtfCommand implements ICtfCommand {
             if (args[1].equalsIgnoreCase("start") && args.length == 3) {
                 return services.get().maps().all().stream().filter(map -> map.isPlayable()).map(map -> map.id())
                         .filter(id -> id.startsWith(typed)).toList();
+            }
+            if (args[1].equalsIgnoreCase("hub") && args.length == 3) {
+                return List.of("build", "rebuild").stream().filter(option -> option.startsWith(typed)).toList();
             }
             if (args[1].equalsIgnoreCase("board") && args.length == 3) {
                 return List.of("place", "remove").stream().filter(option -> option.startsWith(typed)).toList();

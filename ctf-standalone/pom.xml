@@ -26,7 +26,9 @@
         <!-- 0.1.0: Capture the Flag — classic, one flag, neutral flag and guild war; classes, power-ups, supply drops,
              jump pads, a control point, mutators, map and mutator votes, an announcer, awards, levels, daily challenges,
              parties, team voice, spectators, lobby parkour and leaderboards. -->
-        <plugin.version>0.1.0</plugin.version>
+        <!-- 0.2.0: a hub to land in — hub/hub.schem built into a world of its own (hub-world), the lobby's spawn,
+             protected, and off its edge is back to the spawn; /ctf admin hub [build|rebuild]. -->
+        <plugin.version>0.2.0</plugin.version>
     </properties>
 
     <dependencies>

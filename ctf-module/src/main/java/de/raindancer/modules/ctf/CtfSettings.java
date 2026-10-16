@@ -319,6 +319,12 @@ public record CtfSettings(
         @Key("throw-range")
         boolean throwRange,
 
+        @In("ctf/lobby") @Title("World the hub is built in")
+        @Describe("Where plugins/RainsCaptureTheFlag/hub/hub.schem is built and players land. Without a hub the "
+                + "lobby is wherever staff set it (/ctf admin).")
+        @Key("hub-world")
+        String hubWorld,
+
         @In("ctf/lobby") @Title("Everybody joining the server joins the lobby")
         @Describe("For a server of its own. Off: players type /ctf join.")
         @Key("lobby-on-join")
@@ -332,7 +338,7 @@ public record CtfSettings(
             2, true, 1, 30, true, 15, 30, true, true, 5,
             true, 45, true, 180, true, true, 10, 3, true, true, true, true, true,
             true, true, 3, true, 50, 15, 5, 100, 0, 0,
-            true, true, true, false);
+            true, true, true, "ctf_hub", false);
 
     /** The twists that may come up, as read from the list; unknown names are left out. */
     public List<Mutator> allowedMutators() {
