@@ -14,7 +14,7 @@ public enum Role {
     ARCHER("Archer", Material.BOW, true, false, "A longbow and a quiver of arrows.", "An arrow makes a carrier glow."),
     MEDIC("Medic", Material.GOLDEN_APPLE, true, false, "Heals teammates near them.", "Once a life: right click a teammate to mend them."),
     ENGINEER("Engineer", Material.PISTON, true, true, "Barricades, jump pads and a turret.", "Only when building is on."),
-    NINJA("Ninja", Material.ENDER_EYE, true, false, "Sneak to vanish for a moment.", "Hitting or carrying ends it."),
+    NINJA("Ninja", Material.ENDER_EYE, true, false, "Sneak to vanish for a moment — armour and all.", "Hitting or carrying ends it."),
     TRAPPER("Trapper", Material.COBWEB, true, false, "Cobweb traps and tripwire alarms.", "Best near your own flag.");
 
     private final String title;

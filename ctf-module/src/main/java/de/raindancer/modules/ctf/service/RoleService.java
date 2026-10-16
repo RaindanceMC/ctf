@@ -60,6 +60,10 @@ public final class RoleService implements ICtfService {
     private final NamespacedKey abilityKey;
     private final Map<UUID, Long> vanishedUntil = new ConcurrentHashMap<>();
     private final Map<UUID, Long> vanishReady = new ConcurrentHashMap<>();
+    private final de.raindancer.modules.ctf.rules.GrappleRule grappleRule = new de.raindancer.modules.ctf.rules.GrappleRule();
+    private final Map<UUID, Long> grappleReady = new ConcurrentHashMap<>();
+    /** Who pulled since they last stood on the ground. */
+    private final java.util.Set<UUID> grappledInAir = ConcurrentHashMap.newKeySet();
     private volatile CtfSettings settings;
 
     public RoleService(Plugin plugin, Effects effects, LongSupplier clock, CtfSettings settings) {
@@ -302,6 +306,8 @@ public final class RoleService implements ICtfService {
         Scheduling.entity(plugin, ninja, () -> {
             ninja.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, VANISH_SECONDS * 20, 0, false,
                     false, true));
+            // invisibility hides the body only: armour and what they hold would still show
+            de.raindancer.core.social.visibility.HiddenGear.hide(plugin, ninja, VANISH_SECONDS * 20L);
             ninja.getInventory().setItem(EquipmentSlot.HEAD, null);
         });
         effects.play(ninja.getUniqueId(), Cues.VANISH);
@@ -319,6 +325,7 @@ public final class RoleService implements ICtfService {
             return;
         }
         ninja.removePotionEffect(PotionEffectType.INVISIBILITY);
+        de.raindancer.core.social.visibility.HiddenGear.show(ninja);
         if (ninja.getInventory().getItem(EquipmentSlot.HEAD).getType().isAir()) {
             ninja.getInventory().setItem(EquipmentSlot.HEAD, leather(Material.LEATHER_HELMET, colour));
         }
@@ -330,9 +337,28 @@ public final class RoleService implements ICtfService {
         return vanishedUntil.entrySet().stream().filter(entry -> entry.getValue() <= now).map(Map.Entry::getKey).toList();
     }
 
+    /** Whether the hook may pull now — and if so, it counts as pulled. Their own thread. */
+    public boolean grapple(Player player) {
+        UUID id = player.getUniqueId();
+        boolean onGround = ((org.bukkit.entity.Entity) player).isOnGround();
+        if (onGround) {
+            grappledInAir.remove(id);
+        }
+        long now = clock.getAsLong();
+        if (!grappleRule.mayPull(onGround, grappledInAir.contains(id), now, grappleReady.getOrDefault(id, 0L))) {
+            return false;
+        }
+        grappleReady.put(id, now + de.raindancer.modules.ctf.rules.GrappleRule.COOLDOWN_MILLIS);
+        grappledInAir.add(id);
+        return true;
+    }
+
     public void forget(UUID player) {
+        de.raindancer.core.social.visibility.HiddenGear.forget(player);
         vanishedUntil.remove(player);
         vanishReady.remove(player);
+        grappleReady.remove(player);
+        grappledInAir.remove(player);
     }
 
     public void clear() {

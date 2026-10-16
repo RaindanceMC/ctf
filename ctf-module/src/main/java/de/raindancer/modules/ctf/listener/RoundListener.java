@@ -392,14 +392,13 @@ public final class RoundListener implements ICtfListener {
                 player.getInventory().getItemInMainHand()).orElse(null))) {
             return;
         }
-        if (event.getState() != PlayerFishEvent.State.IN_GROUND && event.getState() != PlayerFishEvent.State.REEL_IN
-                && event.getState() != PlayerFishEvent.State.CAUGHT_ENTITY) {
+        if (!de.raindancer.modules.ctf.rules.GrappleRule.pulls(event.getState())) {
             return;
         }
         FishHook hook = event.getHook();
         Vector pull = hook.getLocation().toVector().subtract(player.getLocation().toVector());
         double distance = pull.length();
-        if (distance < 2 || distance > 40) {
+        if (distance < 2 || distance > 40 || !services.roles().grapple(player)) {
             return;
         }
         Vector speed = pull.normalize().multiply(Math.min(2.6, 0.6 + distance * 0.08)).setY(Math.min(1.4,
