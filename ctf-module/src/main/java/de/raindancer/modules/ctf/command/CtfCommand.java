@@ -269,6 +269,16 @@ public final class CtfCommand implements ICtfCommand {
                 live.setup().begin(player, args[1], said -> live.messages().send(player, (String) said[0],
                         Arrays.copyOfRange(said, 1, said.length)));
             }
+            case "save" -> {
+                java.util.Optional<de.raindancer.modules.ctf.model.CtfMap> map =
+                        args.length < 2 ? java.util.Optional.empty() : live.maps().load(args[1]);
+                if (map.isEmpty()) {
+                    live.messages().send(sender, "ctf.admin.no-such-map", "map", args.length > 1 ? args[1] : "");
+                    return;
+                }
+                live.messages().send(sender, "ctf.admin.map-saving", "map", map.get().id());
+                live.arena().capture(map.get(), key -> live.messages().send(sender, key, "map", map.get().id()));
+            }
             case "title" -> {
                 if (!(sender instanceof Player player) || args.length < 2) {
                     live.messages().send(sender, "ctf.admin.usage");
@@ -345,7 +355,7 @@ public final class CtfCommand implements ICtfCommand {
                 return ADMIN.stream().filter(option -> option.startsWith(typed)).toList();
             }
             if (args[1].equalsIgnoreCase("map") && args.length == 3) {
-                return List.of("list", "setup", "menu", "title", "reload", "rebuild", "bases").stream()
+                return List.of("list", "setup", "save", "menu", "title", "reload", "rebuild", "bases").stream()
                         .filter(option -> option.startsWith(typed)).toList();
             }
             if (args[1].equalsIgnoreCase("map") && args.length == 4) {

@@ -54,6 +54,9 @@ public final class ArenaWorldService implements ICtfService {
     private final YamlStore builtFile;
     private final Map<String, Built> built = new ConcurrentHashMap<>();
     private final Map<String, Long> builtVersions = new ConcurrentHashMap<>();
+    /** Slots a map stood in before it was built again elsewhere: never used again — a paste skips air, so the old
+     *  blocks would stay mixed into the new ones. */
+    private final java.util.Set<Integer> retired = ConcurrentHashMap.newKeySet();
     private final Map<String, PasteJob> building = new ConcurrentHashMap<>();
     private volatile CtfSettings settings;
     private volatile Predicate<Player> mayBuild = player -> false;
@@ -73,6 +76,7 @@ public final class ArenaWorldService implements ICtfService {
                 builtVersions.put(id, section.getLong(id + ".version"));
             }
         }
+        retired.addAll(yaml.getIntegerList("retired"));
     }
 
     @Override
@@ -209,7 +213,11 @@ public final class ArenaWorldService implements ICtfService {
                     failed.accept("ctf.admin.world-refused");
                     return;
                 }
-                Built where = built.getOrDefault(map.id(), new Built(map.id(), freeSlot() * SLOT_WIDTH, MAP_Y, 0));
+                Built old = built.get(map.id());
+                if (old != null) {
+                    retired.add(Math.floorDiv(old.originX(), SLOT_WIDTH));
+                }
+                Built where = new Built(map.id(), freeSlot() * SLOT_WIDTH, MAP_Y, 0);
                 PasteJob job = new PasteJob(plugin, world.get(), schematic.placements(
                         new Spot(world.get().getName(), where.originX(), where.originY(), where.originZ())));
                 building.put(map.id(), job);
@@ -229,34 +237,86 @@ public final class ArenaWorldService implements ICtfService {
 
     /** Forgets where a map stood, so the next round on it builds it again. */
     public void forget(String id) {
-        built.remove(id);
+        Built old = built.remove(id);
+        if (old != null) {
+            retired.add(Math.floorDiv(old.originX(), SLOT_WIDTH));
+        }
         builtVersions.remove(id);
         save();
     }
 
     private int freeSlot() {
-        java.util.Set<Integer> used = new java.util.HashSet<>();
-        for (Built each : built.values()) {
-            used.add(Math.floorDiv(each.originX(), SLOT_WIDTH));
-        }
+        return freeSlot(built.values().stream().map(each -> Math.floorDiv(each.originX(), SLOT_WIDTH)).toList(),
+                java.util.Set.copyOf(retired));
+    }
+
+    /** The lowest slot neither in use nor retired. */
+    static int freeSlot(java.util.Collection<Integer> used, java.util.Set<Integer> retired) {
         int slot = 0;
-        while (used.contains(slot)) {
+        while (used.contains(slot) || retired.contains(slot)) {
             slot++;
         }
         return slot;
+    }
+
+    static String backupName(String file, long now) {
+        return file + ".before-edit-" + now;
+    }
+
+    /**
+     * Keeps what staff built in creative on a map as the map: its box read out of the world into its schematic (the
+     * old file kept beside it as {@code .before-edit-<time>}), and recorded as standing — not built again.
+     *
+     * @param done told (on an async thread) a message key: saved, or why not
+     */
+    public void capture(CtfMap map, Consumer<String> done) {
+        Built where = built.get(map.id());
+        World world = Bukkit.getWorld(settings.world());
+        Path file = maps.resolve(map.file()).normalize();
+        if (where == null || world == null || building.containsKey(map.id())) {
+            done.accept("ctf.admin.map-not-standing");
+            return;
+        }
+        if (!file.startsWith(maps.normalize())) {
+            done.accept("ctf.admin.no-such-schematic");
+            return;
+        }
+        de.raindancer.core.world.build.SchematicCapture.capture(plugin, world, where.originX(), where.originY(),
+                where.originZ(), map.width(), map.height(), map.length(), schematic -> {
+                    try {
+                        if (Files.isRegularFile(file)) {
+                            Files.copy(file, file.resolveSibling(backupName(map.file(), System.currentTimeMillis())));
+                        }
+                        schematic.write(file);
+                    } catch (IOException unwritable) {
+                        log.error("The map {} could not be saved: {}", map.file(), unwritable.getMessage());
+                        done.accept("ctf.admin.map-save-failed");
+                        return;
+                    }
+                    version(map).ifPresent(version -> builtVersions.put(map.id(), version));
+                    save();
+                    log.info("The map {} was saved from the world: {} kind(s) of block.", map.id(),
+                            schematic.palette().size());
+                    done.accept("ctf.admin.map-saved");
+                });
     }
 
     /** Off the server thread: the file is a row in Core's database. */
     private void save() {
         List<Built> all = List.copyOf(built.values());
         Map<String, Long> versions = Map.copyOf(builtVersions);
-        Scheduling.async(plugin, () -> builtFile.write(yaml -> all.forEach(where -> {
-            String at = "maps." + where.id();
-            yaml.set(at + ".x", where.originX());
-            yaml.set(at + ".y", where.originY());
-            yaml.set(at + ".z", where.originZ());
-            yaml.set(at + ".version", versions.getOrDefault(where.id(), 0L));
-        })));
+        List<Integer> gone = List.copyOf(retired);
+        Scheduling.async(plugin, () -> builtFile.write(yaml -> {
+            yaml.set("maps", null);
+            all.forEach(where -> {
+                String at = "maps." + where.id();
+                yaml.set(at + ".x", where.originX());
+                yaml.set(at + ".y", where.originY());
+                yaml.set(at + ".z", where.originZ());
+                yaml.set(at + ".version", versions.getOrDefault(where.id(), 0L));
+            });
+            yaml.set("retired", gone);
+        }));
     }
 
     /** A place in the arena world from a map spot, the map standing at {@code where}. */

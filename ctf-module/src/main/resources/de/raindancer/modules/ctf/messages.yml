@@ -153,7 +153,7 @@ ctf:
     challenge-done: "<green><bold>Challenge done!</bold> <white><challenge></white> <gray>(+<xp> experience)"
 
   admin:
-    usage: "<gray>/ctf admin start [map]|stop|info|hub [build|rebuild] · map list|setup <file>|menu|reload|title <name> [by <author>]|rebuild <map>|bases <map> · board place|remove"
+    usage: "<gray>/ctf admin start [map]|stop|info|hub [build|rebuild] · map list|setup <file>|save <map>|menu|reload|title <name> [by <author>]|rebuild <map>|bases <map> · board place|remove"
     starting: "<green>Starting a round."
     already-running: "<gray>A round is on already."
     stopped: "<yellow>The round is stopped."
@@ -173,6 +173,10 @@ ctf:
     schematic-line: "<gray>• <white><file></white> <dark_gray>— not set up yet"
     no-such-map: "<red>There is no map <white><map></white>."
     will-rebuild: "<gray><white><map></white> is built anew for its next round."
+    map-saving: "<gray>Reading <white><map></white> out of the world…"
+    map-saved: "<green><white><map></white> is saved as it stands now — that is the map from now on. <gray>The old file is kept beside it."
+    map-not-standing: "<red><white><map></white> is not standing anywhere yet. <gray>/ctf admin map setup <map> builds it and takes you there."
+    map-save-failed: "<red><white><map></white> could not be saved — the console says why."
     base-line: "<white><colour></white> <gray>flag <white><flag></white>, <white><spawns></white> spawn(s)"
     lobby-set: "<green>The lobby is here now."
     parkour-set: "<green>Parkour <white><what></white> set."

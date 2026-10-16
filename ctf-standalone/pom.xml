@@ -28,7 +28,7 @@
              parties, team voice, spectators, lobby parkour and leaderboards. -->
         <!-- 0.2.0: a hub to land in — hub/hub.schem built into a world of its own (hub-world), the lobby's spawn,
              protected, and off its edge is back to the spawn; /ctf admin hub [build|rebuild]. -->
-        <plugin.version>0.5.0</plugin.version>
+        <plugin.version>0.6.0</plugin.version>
     </properties>
 
     <dependencies>
