@@ -70,7 +70,7 @@ import java.util.UUID;
  */
 public final class CtfModule implements FlexModule {
 
-    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.10.0")
+    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.10.1")
             .describedAs("Capture the Flag with classes, power-ups, twists, votes, awards, levels and challenges")
             .by("Raindancer118");
 
@@ -117,7 +117,7 @@ public final class CtfModule implements FlexModule {
         RunHistory runs = context.core().runHistory("ctf");
 
         LobbyService lobby = new LobbyService(context.plugin(), new LobbyStore(context.dataFolder().resolve("lobby.yml")),
-                new LoadoutStore(context.dataFolder().resolve("kept")), Loadouts.ofTheServer(), runs,
+                new LoadoutStore(context.dataFolder().resolve("kept")), Loadouts.ofTheServer(context.core().flight()), runs,
                 System::currentTimeMillis, now);
         HubService hub = new HubService(context.plugin(), log, new HubStore(context.dataFolder().resolve("hub")),
                 context.dataFolder().resolve("hub-built.yml"), now);

@@ -28,7 +28,8 @@
              parties, team voice, spectators, lobby parkour and leaderboards. -->
         <!-- 0.2.0: a hub to land in — hub/hub.schem built into a world of its own (hub-world), the lobby's spawn,
              protected, and off its edge is back to the spawn; /ctf admin hub [build|rebuild]. -->
-        <plugin.version>0.10.0</plugin.version>
+        <!-- 0.10.1: the kept inventory side does not save a claim's or /fly's lent flight, so coming back from a round never leaves somebody flying for good. -->
+        <plugin.version>0.10.1</plugin.version>
     </properties>
 
     <dependencies>
