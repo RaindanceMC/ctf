@@ -1,0 +1,31 @@
+id: ctf-lobby
+title: CTF Lobby and Hub
+summary: "While you wait: parkour, the flag throwing range, and the hub where everybody lands."
+intro: |
+  Waiting for a round is boring, so the lobby gives you things to do. Mostly falling off ledges.
+icon: OAK_DOOR
+category: Games
+order: 13
+module: ctf
+aliases: [ctf-lobby, lobby, parkour, hub-ctf, throwing-range]
+keywords: [waiting, checkpoint, record, throw, practice, items, banner]
+related: [ctf, ctf-progress]
+sections:
+  - question: What is the lobby?
+    title: The lobby
+    text: |
+      Where you wait between rounds, vote, pick a class and watch the scoreboard. {if:ctf:lobby-items}You carry a banner for the menu, a compass for the vote, a class item and a bed to leave.{/if} It may be a built hub or a spot staff chose.
+  - question: What is the parkour?
+    title: Parkour
+    when: ctf:parkour
+    text: |
+      A run through the lobby with a start, checkpoints and a finish, timed to a tenth of a second. Step on the start to begin. You must touch every checkpoint, or the run does not count; fall off and you return to your last checkpoint. Records are kept, and finishing earns an achievement.
+  - question: What is the throwing range?
+    title: Throwing range
+    when: ctf:throw-range
+    text: |
+      A practice flag. Stand at the throwing line, right-click, and watch it fly; the distance is shown with your rank and your record. Throw it over the edge and it does not count.
+  - question: What if I fall off the hub?
+    title: Falling
+    text: |
+      You are put back where everybody lands (or at your last parkour checkpoint). Nothing is lost.

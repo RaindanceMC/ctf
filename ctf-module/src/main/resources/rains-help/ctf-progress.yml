@@ -1,0 +1,51 @@
+id: ctf-progress
+title: CTF Progress and Rewards
+summary: Experience, levels, trails and fireworks, daily challenges, achievements, leaderboards and money.
+intro: |
+  Playing earns things: experience, shiny trails, a leaderboard rank to brag about. I make no promises about the bragging.
+icon: NETHER_STAR
+category: Progress & rewards
+order: 12
+module: ctf
+aliases: [ctf-progress, ctf-stats, stats, levels, challenges, achievements, top, looks]
+keywords: [xp, experience, level, unlock, trail, firework, daily, leaderboard, record, money, reward, fee, entry, prize]
+related: [ctf, ctf-rules, ctf-classes]
+sections:
+  - question: How do I see my record?
+    title: Your record
+    text: |
+      {run:/ctf stats} shows your rounds, wins, captures, returns, kills, deaths, flag carriers stopped, MVPs and fastest capture{if:ctf:levels}, and your level{/if}. {cmd:/ctf stats <player>} shows somebody else's.
+  - question: How do levels work?
+    title: Levels
+    when: ctf:levels
+    text: |
+      You earn experience: <white>30</white> for a capture, <white>15</white> for a return, <white>5</white> per kill, <white>10</white> for stopping a carrier, <white>50</white> for winning a round and <white>20</white> for simply playing one. Level 2 needs 100, level 3 needs 300, level 4 needs 600 — each level a hundred more than the one before.
+  - question: What do levels unlock?
+    title: Unlocks
+    when: ctf:levels
+    text: |
+      <white>Flag trails</white> (what a carrier leaves behind): team colour from the start, flames at level 3, hearts 5, notes 7, souls 10, cherry petals 13, stardust 16, totem 20. <white>Capture fireworks:</white> burst from the start, big ball at 4, stars 8, creeper 12, twinkle 18. Pick yours in {run:/ctf looks}.
+  - question: What are daily challenges?
+    title: Challenges
+    when: ctf:challenges
+    text: |
+      {run:/ctf challenges} shows today's <white>{setting:ctf:challenges-per-day}</white> challenges — things like capturing flags, returning them, taking down carriers, winning rounds, taking power-ups, or a class-specific one such as capturing as a Scout. Each pays experience when done, and new ones appear every day. Progress is counted across rounds.
+  - question: What are achievements?
+    title: Achievements
+    when: ctf:achievements
+    text: |
+      First Capture, Hat Trick (three captures in a round), Speed Demon (capture within twenty seconds of taking it), The Wall (five returns in a round), Unstoppable (seven kills without dying), Most Valuable, Clean Sheet (win without your flag ever leaving home), Veteran (a hundred rounds), Free Runner (finish the lobby parkour) and Denied! (stop a carrier a few steps from scoring).
+  - question: Who is the best?
+    title: Leaderboards
+    text: |
+      {run:/ctf top} lists the best by captures and wins, all time and this week. Staff can put leaderboards up in the world too, and the lobby has records for parkour and flag throwing.
+  - question: Does it pay money?
+    title: Money
+    when: ctf:pay-capture > 0 || ctf:pay-return > 0 || ctf:pay-kill > 0 || ctf:pay-win > 0
+    text: |
+      On top of experience:{if:ctf:pay-capture > 0} <white>{setting:ctf:pay-capture|money}</white> per capture,{/if}{if:ctf:pay-return > 0} <white>{setting:ctf:pay-return|money}</white> per return,{/if}{if:ctf:pay-kill > 0} <white>{setting:ctf:pay-kill|money}</white> per kill,{/if}{if:ctf:pay-win > 0} <white>{setting:ctf:pay-win|money}</white> for each winner of a round.{/if} Needs an economy on the server.
+  - question: Is there an entry fee?
+    title: Entry fee
+    when: ctf:entry-fee > 0
+    text: |
+      Joining a round costs <white>{setting:ctf:entry-fee|money}</white>. All fees go into a pot that the winners share{if:ctf:house-cut > 0}, minus the house's <white>{setting:ctf:house-cut|percent}</white>{/if}. If nobody wins, or the round never starts, everyone gets their fee back. Cannot pay? You watch instead.

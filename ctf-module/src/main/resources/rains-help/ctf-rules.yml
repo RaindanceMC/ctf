@@ -1,0 +1,69 @@
+id: ctf-rules
+title: CTF Rules
+summary: Kinds of round, flags, winning, overtime, respawning, building — every rule of a round.
+intro: |
+  Rules, because without them it is merely a lot of people hitting each other with swords near a banner.
+icon: WHITE_BANNER
+category: Games
+order: 11
+module: ctf
+aliases: [ctf-rules, ctfrules, flags-rules, overtime, respawn]
+keywords: [rules, flag, carry, throw, drop, capture, return, hot, trail, compass, tie, sudden, death, building, friendly, fire, hunger, void]
+related: [ctf, ctf-classes, ctf-progress]
+sections:
+  - question: What kinds of round are there?
+    title: Kinds of round
+    text: |
+      <white>Classic:</white> each side has a flag; bring theirs home while yours is at home. <white>One flag:</white> one side defends, the other attacks; at half time they swap, and most captures wins. <white>Neutral flag:</white> one flag in the middle — carry it into the other side's base. <white>Guild war:</white> classic, guild against guild; needs two guilds online, otherwise it becomes classic.
+      When nobody votes, <white>{setting:ctf:default-type}</white> is played.
+  - question: How do I take a flag?
+    title: Taking a flag
+    text: |
+      Walk up to the other side's flag. {if:ctf:pickup-seconds > 0}You must stay by it for <white>{setting:ctf:pickup-seconds|seconds}</white> while it is on its stand; a flag lying on the ground is grabbed at once. Scouts take any flag at once.{else}You take it the moment you touch it.{/if} Carriers cannot take a second flag. Tanks cannot carry at all — they escort.
+  - question: How do I score?
+    title: Capturing
+    text: |
+      Bring the flag to your own flag's spot, within <white>{setting:ctf:capture-radius}</white> blocks.
+      {if:ctf:own-flag-home}Your own flag must be at home to score: if the enemy has yours, get it back first.{else}You score even while your own flag is away.{/if} In a neutral round you carry the middle flag into the enemy's base instead; in one-flag rounds the attackers score at their own base.
+  - question: What if the flag is dropped?
+    title: Dropped flags
+    text: |
+      A carrier who falls drops the flag where they died. A teammate of the flag's owner who touches it <white>returns</white> it home; an enemy picks it up. Left alone, it goes back after <white>{setting:ctf:return-seconds|seconds}</white>. A flag lost over the edge of the map goes home at once.
+  - question: Can I throw the flag?
+    title: Throwing
+    when: ctf:throwing
+    text: |
+      Yes: right-click with the flag in hand. It flies where you look and lands as a dropped flag for a teammate to grab (or an enemy, if you aim badly).
+  - question: What is a hot flag?
+    title: Hot flags
+    when: ctf:glow-after > 0 || ctf:slow-after > 0
+    text: |
+      Holding on for long makes a carrier easier to catch.{if:ctf:glow-after > 0} After <white>{setting:ctf:glow-after|seconds}</white> they glow for everybody.{/if}{if:ctf:slow-after > 0} After <white>{setting:ctf:slow-after|seconds}</white> they also slow down a little.{/if}{if:ctf:trail} A carrier also leaves a trail.{/if}{if:ctf:compass} Each side's compass points at its stolen flag.{/if}
+  - question: How are rounds won?
+    title: Winning
+    text: |
+      First to <white>{setting:ctf:captures-to-win}</white> captures. At <white>{setting:ctf:time-limit|minutes}</white> the side ahead wins (a one-flag round has half of that per half). If it is a tie:
+      {if:ctf:tie-break == SUDDEN_DEATH}<white>sudden death</white> — both flags move to the middle, and the next capture wins.{/if}{if:ctf:tie-break == NEXT_CAPTURE}<white>overtime</white> — play on, the next capture wins.{/if}{if:ctf:tie-break == DRAW}it is a <white>draw</white>.{/if}
+      {if:ctf:tie-break != DRAW}Overtime lasts at most <white>{setting:ctf:overtime|minutes}</white>; still nothing, and it is a draw after all.{/if}
+  - question: What happens when I die?
+    title: Respawning
+    text: |
+      You become a spectator for <white>{setting:ctf:respawn-seconds|seconds}</white>, with a countdown on the action bar, and then return at your spawn with your class kit. Fall off the map and you count as killed (credit goes to whoever hit you last). A flag you carried drops where you fell.
+      {if:ctf:control-point}Holding the control point shortens your side's respawn by <white>{setting:ctf:control-bonus|seconds}</white>.{/if}
+  - question: Can I hurt my teammates?
+    title: Friendly fire
+    text: |
+      {if:ctf:friendly-fire}Yes, so watch your swings.{else}No: teammates cannot hurt each other.{/if} Hunger is {if:ctf:hunger}<white>on</white>: eat.{else}<white>off</white>: you will not starve in the middle of a fight.{/if}
+  - question: Can I build in a round?
+    title: Building
+    text: |
+      {if:ctf:building == NONE}No: the map stays exactly as it is.{/if}{if:ctf:building == OWN_BLOCKS}You may place blocks, but you can break only blocks placed during this round.{/if}{if:ctf:building == FREE}You may place and break anything.{/if} Never near a flag or a spawn (<white>{setting:ctf:keep-clear}</white> blocks around them are kept clear). After the round the map is put back exactly as it was. A twist like Spleef overrides this.
+  - question: What is the control point?
+    title: Control point
+    when: ctf:control-point
+    text: |
+      Where the map has one: stand on it for <white>{setting:ctf:control-seconds|seconds}</white> and your side takes it. The side that holds it respawns <white>{setting:ctf:control-bonus|seconds}</white> faster, until the other side takes it back.
+  - question: What happens at the end?
+    title: After a round
+    text: |
+      Results, {if:ctf:awards}awards (MVP, Best Defender, Speed Demon, Butterfingers, Bodyguard, Flag Runner),{/if} and your reward, for about ten seconds — then the map is put back and everybody is back in the lobby. Staff can also stop a round, which is a draw.

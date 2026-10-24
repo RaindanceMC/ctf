@@ -1,0 +1,59 @@
+id: ctf-classes
+title: CTF Classes and Extras
+summary: The classes, power-ups, supply drops, jump pads and twists that make a round interesting.
+intro: |
+  Everyone fights better when they have a role, and a grappling hook. Here is what you can be, and what lies around waiting to be picked up.
+icon: IRON_SWORD
+category: Games
+order: 12
+module: ctf
+aliases: [ctf-classes, classes, class, powerups, power-ups, twists, mutators, supply, drops]
+keywords: [soldier, scout, tank, archer, medic, engineer, ninja, trapper, grapple, jump, pad, twist, announcer, kit]
+related: [ctf, ctf-rules, ctf-progress]
+sections:
+  - question: How do I pick a class?
+    title: Choosing
+    when: ctf:classes
+    text: |
+      {run:/ctf class} opens the list; {cmd:/ctf class <name>} picks one directly. Your choice applies <white>from your next life</white> and is remembered. Somebody who never picked plays <white>{setting:ctf:default-class}</white>. Classes that need something switched off here (like the Engineer without building) are greyed out.
+  - question: What do the classes do?
+    title: The classes
+    when: ctf:classes
+    text: |
+      <white>Soldier:</white> sword, bow, iron armour — good at everything. <white>Scout:</white> fast, light, wind charges, takes a flag at once. <white>Tank:</white> heavy armour and a shield, slow; <red>cannot carry</red> a flag, only escort it. <white>Archer:</white> longbow and a quiver; an arrow makes a carrier glow. <white>Medic:</white> heals teammates near them, and once a life mends one fully with a right click. <white>Engineer:</white> barricades, jump pads and a turret (only when building is on). <white>Ninja:</white> sneak to vanish for six seconds; hitting or carrying ends it. <white>Trapper:</white> cobweb traps and tripwire alarms.
+  - question: Tell me about the Ninja and Medic.
+    title: Ninja and Medic
+    when: ctf:classes
+    text: |
+      <white>Ninja:</white> sneak to vanish — unseen and unheard — for 6 seconds, then wait 15 seconds before you can again. Not while carrying a flag, and attacking breaks it.
+      <white>Medic:</white> teammates within about six blocks slowly heal. Right-click a teammate to mend them completely, once per life.
+  - question: Engineers and Trappers?
+    title: Engineer and Trapper
+    when: ctf:classes
+    text: |
+      <white>Engineer</white> (needs building on here{if:ctf:building == NONE}, which is <red>off</red> at the moment{/if}): places barricades and jump pads, and a turret that shoots the other side for forty seconds. <white>Trapper:</white> cobweb traps that slow enemies and tripwire alarms that tell your side when somebody sneaks past. Neither may be placed on a flag or a spawn, or outside the map.
+  - question: What are power-ups?
+    title: Power-ups
+    when: ctf:power-ups
+    text: |
+      Glowing items on set spots of the map. Walk into one: <white>Speed</white> (a short sprint, Speed IV for Scouts), <white>Strength</white>, <white>Shield</white> (extra hearts and resistance for a moment), <white>Grappling hook</white> (a fishing rod that pulls you), <white>Double jump</white>, or <white>Heal</white> (full health — or four spare hearts if you were already healthy). A taken spot comes back as something else after <white>{setting:ctf:power-up-seconds|seconds}</white>.
+  - question: What are supply drops?
+    title: Supply drops
+    when: ctf:supply-drops
+    text: |
+      Every <white>{setting:ctf:supply-seconds|seconds}</white> a chest falls from the sky at one of the map's drop spots, with a beam of light to find it. Whoever opens it first gets three random treats: golden apples, ender pearls, arrows, food, wind charges or a grappling hook, plus a moment of regeneration. Only one lies about at a time.
+  - question: What are jump pads?
+    title: Jump pads
+    when: ctf:jump-pads
+    text: |
+      A pressure plate on a slime block throws whoever steps on it. Map builders put some on the maps, and Engineers build their own.
+  - question: What are twists?
+    title: Twists
+    when: ctf:mutators
+    text: |
+      A twist makes one round odd. Low gravity, tiny players, giants, one-hit kills, elytra for everybody, knockback chaos, base swapping every two minutes and spleef (shovels only, and the floor breaks) are all possible. {if:ctf:vote-mutators}The lobby votes on one.{else}One may come by chance.{/if} The twist is announced when the round starts.
+  - question: Who is shouting at me?
+    title: The announcer
+    when: ctf:announcer
+    text: |
+      The announcer: first blood, double and triple kills, killing sprees, "Flag taken!", "Denied!", "Comeback!", overtime and sudden death, supply drops — on screen and in sound.{if:ctf:capture-show} Captures also set off fireworks, in the style you unlocked.{/if}

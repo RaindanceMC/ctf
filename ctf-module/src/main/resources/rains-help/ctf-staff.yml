@@ -1,0 +1,39 @@
+id: ctf-staff
+title: CTF for Staff
+summary: Maps, the lobby, the hub, leaderboards, starting and stopping rounds.
+intro: |
+  Running Capture the Flag is mostly building maps and then watching other people enjoy them. This is the toolbox.
+icon: COMMAND_BLOCK
+category: Staff
+order: 14
+module: ctf
+permission: rainsctf.admin
+aliases: [ctf-admin, ctfadmin, ctf-staff]
+keywords: [admin, map, schematic, setup, hub, lobby, board, start, stop, info, reload, rebuild]
+related: [ctf, ctf-rules]
+sections:
+  - question: How do I start and stop rounds?
+    title: Rounds
+    text: |
+      {cmd:/ctf admin start [map]} starts one now (at least two players), on the map you name or as the vote says. {cmd:/ctf admin stop} ends the running round as a draw. {cmd:/ctf admin info} shows the round, its flags and each fighter. {cmd:/ctf admin} opens the staff menu.
+  - question: How do I add a map?
+    title: Maps
+    text: |
+      Put a Sponge <white>.schem</white> in the maps folder, then {cmd:/ctf admin map setup <file>} builds it and takes you there; {cmd:/ctf admin map menu} holds the tools to mark each base's flag and spawns, the neutral middle, a control point, power-ups, supply drops, the floor and the spectators' spot. {cmd:/ctf admin map title <name> by <author>} names it. A map is playable once every base has a flag and spawns.
+  - question: How do I manage maps?
+    title: Map commands
+    text: |
+      {cmd:/ctf admin map list} shows maps and schematics; {cmd:/ctf admin map bases <map>} lists their bases; {cmd:/ctf admin map save <map>} saves how the map stands in the world as the map from now on (the old file is kept); {cmd:/ctf admin map rebuild <map>} builds it anew for its next round; {cmd:/ctf admin map reload} reads the folder again.
+  - question: Where is the lobby and the hub?
+    title: Lobby and hub
+    text: |
+      The staff menu sets the lobby spawn, the parkour start, checkpoints and finish, and the throwing line. A hub is a schematic with a <white>hub.yml</white> in the hub folder: {cmd:/ctf admin hub build} (or <white>rebuild</white>) builds it in world <white>{setting:ctf:hub-world}</white>. Maps are built in world <white>{setting:ctf:world}</white> — use an empty world made for it.
+  - question: Leaderboards?
+    title: Boards
+    text: |
+      {cmd:/ctf admin board place} puts a leaderboard where you stand; {cmd:/ctf admin board remove} takes the nearest one (within five blocks) away.
+  - question: Where are the numbers?
+    title: Settings
+    permission: rainscore.settings
+    text: |
+      {cmd:/settings} has pages for the rules, flags, power-ups and twists, rewards and the lobby. Changes apply at once, and so does the guide.

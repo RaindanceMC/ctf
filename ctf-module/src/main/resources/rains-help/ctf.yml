@@ -1,0 +1,65 @@
+id: ctf
+title: Capture the Flag
+summary: "Team rounds: steal the other side's flag and bring it home — join, vote, pick a side, watch."
+intro: |
+  Two banners, two teams and a great deal of running in circles. {run:/ctf} opens the menu; here is everything around it. Your belongings are safe the whole time — I checked.
+icon: RED_BANNER
+category: Games
+order: 10
+module: ctf
+aliases: [ctf, capturetheflag, flag, flags, capture]
+keywords: [team, round, lobby, join, vote, side, party, watch, spectate, game, play, minigame]
+commands: [ctf]
+related: [ctf-rules, ctf-classes, ctf-progress, ctf-lobby]
+sections:
+  - question: What is Capture the Flag?
+    title: The idea
+    text: |
+      Two sides, each with a flag at its base. Steal theirs, carry it home, and score — usually while yours is still sitting at home. The first side to <white>{setting:ctf:captures-to-win}</white> captures wins; if time runs out first ({setting:ctf:time-limit|minutes}), the side ahead wins. Rounds are played on maps built from schematics.
+      {if:ctf:sides > 2}Up to <white>{setting:ctf:sides}</white> sides play on a map with that many bases.{/if}
+  - question: How do I join?
+    title: Joining
+    text: |
+      {run:/ctf join} takes you into the lobby. {if:ctf:lobby-on-join}On this server you are in the lobby as soon as you arrive; {cmd:/ctf join} brings you back if you left.{else}What you carry — items, armour, experience, position — is put away safely and given back when you leave with {run:/ctf leave}.{/if}
+
+      You need <white>{setting:ctf:min-players}</white> players for a round, and up to <white>{setting:ctf:max-players}</white> can play; later arrivals watch.
+  - question: How does a round start?
+    title: Starting a round
+    text: |
+      {if:ctf:auto-start}With enough players the lobby counts down <white>{setting:ctf:countdown-seconds|seconds}</white> — only <white>{setting:ctf:full-countdown-seconds|seconds}</white> if the round is full. During the countdown you vote and pick your class. Then the map is built (the first round on a map takes a moment), everybody is frozen for 5 seconds, and off you go.{else}Rounds only start when staff start them. Until then you vote, pick a class and wait.{/if}
+      If somebody leaves and there are not enough players, the countdown waits.
+  - question: What can I vote on?
+    title: Voting
+    text: |
+      {run:/ctf vote} (or the compass in the lobby) opens the ballot once the countdown has begun.{if:ctf:vote-maps} You vote on the <white>map</white>,{/if}{if:ctf:vote-types} the <white>kind of round</white>{/if}{if:ctf:vote-mutators} and a <white>twist</white>{/if}. The most votes win; ties are drawn by lot. Nothing voted? Then a map is picked by chance{if:!ctf:vote-types}, and the kind of round is always the default one{/if}{if:ctf:mutator-chance > 0}, and there is a <white>{setting:ctf:mutator-chance|percent}</white> chance of a twist{/if}.
+  - question: Which side am I on?
+    title: Sides
+    text: |
+      The server makes the sides even. Friends in a party stay together; then wishes count. {run:/ctf side} lets you wish for a colour — it is granted as long as it keeps the sides even. Mid-round you can switch only to a smaller side, and not while carrying a flag.
+
+      Alone against two or more? You get <white>two extra hearts</white> and a little speed to even it out; it goes when somebody joins you.
+  - question: How do I play with friends?
+    title: Parties
+    text: |
+      {cmd:/ctf party invite <player>} invites somebody; they answer with {cmd:/ctf party accept}. A party has up to 8 members, is kept on one side when it fits, and is split only if it is too big for one. {cmd:/ctf party list}, {cmd:/ctf party leave} and {cmd:/ctf party kick <player>} do what they say. An invite lapses after two minutes; only the leader invites.
+  - question: Can I join a round that is running?
+    title: Joining late
+    text: |
+      {if:ctf:join-running}Yes: you land on the smaller side, in the middle of everything.{else}No: you watch until the next round starts.{/if} The same goes if you leave the server: your flag, if you had one, goes home.
+  - question: How do I watch a round?
+    title: Watching
+    text: |
+      From the lobby, {run:/ctf watch} lets you look at the round from above. {if:ctf:follow-flag}{cmd:/ctf follow} carries you along with a flag carrier; sneak to let go and look round yourself.{/if} You watch automatically when the round is full{if:ctf:entry-fee > 0} or when you cannot pay the entry fee{/if}. You can only watch from the lobby — it keeps your things safe.
+  - question: Can I talk to my team?
+    title: Team voice
+    when: ctf:team-voice
+    text: |
+      Yes, if you use Simple Voice Chat: each side talks in its own voice group during a round, so the enemy hears nothing.
+  - question: How do I leave?
+    title: Leaving
+    text: |
+      {run:/ctf leave} takes you out of the lobby and gives you back everything you had. Leaving during a round drops you from it: a flag you carried goes home, and if one side is left alone the others win by forfeit — rewarded only if the round was long enough, so nobody can farm wins by walking away.
+  - question: Is there a menu for all of this?
+    title: The menu
+    text: |
+      {run:/ctf} opens it: <white>Play</white>, <white>Vote</white>, <white>Class</white>, <white>Side</white>, <white>Watch</white>, <white>Leave</white>, <white>Your record</white>, <white>The best</white>, <white>Your looks</white>, <white>Today's challenges</white> and <white>Party</white>. {if:ctf:lobby-items}In the lobby you also carry items: a banner for the menu, a compass to vote, a bed to leave.{/if}
