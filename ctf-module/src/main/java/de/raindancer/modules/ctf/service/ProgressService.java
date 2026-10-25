@@ -220,6 +220,17 @@ public final class ProgressService implements ICtfService {
         return challenges.today(LocalDate.ofEpochDay(today()), settings.challengesPerDay());
     }
 
+    public boolean levelsOn() {
+        return settings.levels();
+    }
+
+    /** How far each of today's challenges is for somebody: the cache while they are loaded, else read. Blocking. */
+    public Map<Challenge, Integer> challengesOf(UUID player) {
+        refreshDay();
+        Map<Challenge, Integer> held = todayCache.get(player);
+        return held != null ? Map.copyOf(held) : profiles.challenges(player, today());
+    }
+
     public int challengeDone(UUID player, Challenge challenge) {
         refreshDay();
         return todayCache.getOrDefault(player, Map.of()).getOrDefault(challenge, 0);

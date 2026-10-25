@@ -38,6 +38,7 @@ import de.raindancer.modules.ctf.rules.BalanceRule;
 import de.raindancer.modules.ctf.rules.BuildRule;
 import de.raindancer.modules.ctf.rules.ControlRule;
 import de.raindancer.modules.ctf.rules.FlagRule;
+import de.raindancer.modules.ctf.rules.ScreenRule;
 import de.raindancer.modules.ctf.rules.WinRule;
 import de.raindancer.modules.ctf.store.MapStore;
 import de.raindancer.modules.ctf.store.StatsStore;
@@ -308,6 +309,20 @@ public final class RoundService implements ICtfService {
 
     public Optional<Round> round() {
         return Optional.ofNullable(round);
+    }
+
+    /** Where Capture the Flag is, for a screen: any thread, the round read under its own lock. */
+    public ScreenRule.Glance glance() {
+        Round now = round;
+        int waiting = lobby.everybody().size();
+        if (now == null) {
+            return ScreenRule.Glance.lobby(gathering, waiting, settings.minPlayers(), countdown);
+        }
+        synchronized (now) {
+            return new ScreenRule.Glance(now.phase(), now.map().title(), now.type().title(),
+                    now.sides().stream().map(Side::tagged).toList(), now.scores(),
+                    now.endsAt() - clock.getAsLong(), now.fighters().size(), waiting, settings.minPlayers(), countdown);
+        }
     }
 
     /** Where things stand: the round's phase while there is one, else the lobby's. */

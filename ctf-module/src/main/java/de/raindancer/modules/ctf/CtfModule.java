@@ -27,6 +27,7 @@ import de.raindancer.modules.ctf.screen.StatsMenu;
 import de.raindancer.modules.ctf.screen.TopMenu;
 import de.raindancer.modules.ctf.screen.VoteMenu;
 import de.raindancer.modules.ctf.service.AnnouncerService;
+import de.raindancer.modules.ctf.service.CtfScreens;
 import de.raindancer.modules.ctf.service.ArenaWorldService;
 import de.raindancer.modules.ctf.service.FlagService;
 import de.raindancer.modules.ctf.service.HubService;
@@ -70,7 +71,7 @@ import java.util.UUID;
  */
 public final class CtfModule implements FlexModule {
 
-    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.11.0")
+    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.12.0")
             .describedAs("Capture the Flag with classes, power-ups, twists, votes, awards, levels and challenges")
             .by("Raindancer118");
 
@@ -170,8 +171,19 @@ public final class CtfModule implements FlexModule {
         powerUps.roleOf(id -> roundsNow.fighter(id).map(de.raindancer.modules.ctf.model.Fighter::role));
         arena.building(rounds::mayBuildAtAll);
 
+        CtfScreens screenTexts = new CtfScreens(stats, progress, rounds, System::currentTimeMillis);
         boards = new FloatingBoards(context.plugin(), server, context.dataFolder().resolve("boards.yml"), "board",
-                () -> MiniMessage.miniMessage().deserialize(boardText(stats)), 30);
+                screenTexts::board, 30);
+        // Screens for /screen — Core 2.10.0; on an older Core there are simply none.
+        try {
+            var screens = context.core().screens();
+            if (screens != null) {
+                screenTexts.register(screens, context.plugin());
+                context.closeWith(() -> CtfScreens.KINDS.forEach(screens::unregister));
+            }
+        } catch (LinkageError olderCore) {
+            context.log().info("RainsCore is older than 2.10.0: no Capture the Flag screens until it is updated.");
+        }
 
         settings.onChange(fresh -> {
             arena.settings(fresh);
@@ -293,28 +305,6 @@ public final class CtfModule implements FlexModule {
                 Scheduling.entity(context.plugin(), online, () -> rounds.join(online));
             }
         }
-    }
-
-    private static String boardText(StatsStore stats) {
-        StringBuilder out = new StringBuilder("<red><bold>⚑ CAPTURE THE FLAG ⚑</bold></red>\n<gray>Most captures\n");
-        List<de.raindancer.modules.ctf.model.Stats> best = stats.top(StatsStore.Board.CAPTURES, 5);
-        if (best.isEmpty()) {
-            out.append("<gray>Nobody yet — be the first!\n");
-        }
-        String[] places = {"<gold>①", "<gray>②", "<#cd7f32>③", "<white>④", "<white>⑤"};
-        for (int index = 0; index < best.size(); index++) {
-            out.append(places[index]).append(" <white>").append(best.get(index).name()).append(" <gray>— <yellow>")
-                    .append(best.get(index).captures()).append("\n");
-        }
-        List<StatsStore.Weekly> week = stats.week(LocalDate.now().toEpochDay() / 7, 3);
-        if (!week.isEmpty()) {
-            out.append("\n<aqua>This week\n");
-            for (int index = 0; index < week.size(); index++) {
-                out.append(places[index]).append(" <white>").append(week.get(index).name()).append(" <gray>— <yellow>")
-                        .append(week.get(index).captures()).append("\n");
-            }
-        }
-        return out.toString().stripTrailing();
     }
 
     @Override
