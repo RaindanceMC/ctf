@@ -26,7 +26,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * The voice of a round: "Flag taken!", "First blood!", "Denied!" — a title, a sound and a chat line, to everybody or to
+ * The voice of a round: "Flag taken!", "First kill", "Stopped just in time": a title, a sound and a chat line, to everybody or to
  * one side. And the show of a capture: fireworks in the scoring side's colour, everybody near slowed for a breath.
  *
  * <p>Every sound is a Core cue ({@code ctf:*}) an owner can change in Core's cue menu; this only defines them where

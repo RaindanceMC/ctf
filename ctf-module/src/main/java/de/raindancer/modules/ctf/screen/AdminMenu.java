@@ -30,7 +30,7 @@ public final class AdminMenu extends Menu implements ICtfScreen {
 
     @Override
     protected Component title() {
-        return MiniMessage.miniMessage().deserialize("<dark_red>Capture the Flag <dark_gray>— staff");
+        return MiniMessage.miniMessage().deserialize("<dark_red>Capture the Flag <dark_gray>· staff");
     }
 
     @Override

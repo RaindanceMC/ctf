@@ -38,7 +38,7 @@ public final class CtfMenu extends Menu implements ICtfScreen {
             case OVER -> "<gray>A round just ended.";
         };
         if (!inside) {
-            band(1, 4, Icons.of(Material.LIME_BANNER, "<green><bold>Play", state, "<gray>Into the lobby — what you",
+            band(1, 4, Icons.of(Material.LIME_BANNER, "<green><bold>Play", state, "<gray>Into the lobby. What you",
                     "<gray>carry is kept until you leave."), click -> {
                 viewer.closeInventory();
                 services.rounds().join(viewer);

@@ -20,7 +20,7 @@ public final class CtfCommands {
         return List.of(ModuleCommand.of("ctf", "Capture the Flag: play, vote, pick a class, see the best",
                         new CtfCommand(CtfCommands::require))
                 .aliased("capturetheflag")
-                .taking("(nothing) — the menu", "join | leave", "vote | class [name] | side", "watch | follow",
+                .taking("(nothing): the menu", "join | leave", "vote | class [name] | side", "watch | follow",
                         "stats [player] | top | looks | challenges", "party invite|accept|leave|kick|list [player]",
                         "admin start [map] | stop | info", "admin hub [build | rebuild]", "admin map list | setup <file|map> | menu | reload | title <name> [by <author>]",
                         "admin map rebuild <map> | bases <map>", "admin board place|remove"));

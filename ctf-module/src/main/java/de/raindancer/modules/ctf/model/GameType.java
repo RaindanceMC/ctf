@@ -5,7 +5,7 @@ import org.bukkit.Material;
 /** How a round is played. */
 public enum GameType {
     /** Each side has a flag; bring theirs home while yours is home. */
-    CLASSIC("Classic", Material.RED_BANNER, "Steal their flag, bring it home —", "while yours is still at home."),
+    CLASSIC("Classic", Material.RED_BANNER, "Steal their flag, bring it home", "while yours is still at home."),
     /** One side defends a flag, the other attacks it; at half time they swap. */
     ONE_FLAG("One flag", Material.SHIELD, "One side defends, one attacks.", "Half time: swap. Most captures wins."),
     /** One flag in the middle; carry it into the other side's base. */

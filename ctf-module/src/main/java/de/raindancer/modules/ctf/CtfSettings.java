@@ -53,7 +53,7 @@ public record CtfSettings(
         int countdownSeconds,
 
         @In("ctf") @Title("Countdown when full, seconds") @Range(min = 3, max = 120)
-        @Describe("The countdown drops to this once the round is full — nobody waits for more who cannot come.")
+        @Describe("The countdown drops to this once the round is full, so nobody waits for players who cannot come.")
         @Key("full-countdown-seconds")
         int fullCountdownSeconds,
 
@@ -116,7 +116,7 @@ public record CtfSettings(
         TieBreak tieBreak,
 
         @In("ctf/rules") @Title("Overtime, minutes") @Range(min = 1, max = 15)
-        @Describe("How long overtime may run before it is a draw after all.")
+        @Describe("How long overtime may run before the round is a draw.")
         @Key("overtime")
         int overtime,
 
@@ -237,7 +237,7 @@ public record CtfSettings(
         int controlBonus,
 
         @In("ctf/fun") @Title("Announcer")
-        @Describe("First blood, double kills, streaks, \"Flag taken!\", \"Denied!\" — on screen and in sound.")
+        @Describe("Kills, streaks and flag events (\"Flag taken!\", \"Stopped just in time\"), on screen and in sound.")
         @Key("announcer")
         boolean announcer,
 

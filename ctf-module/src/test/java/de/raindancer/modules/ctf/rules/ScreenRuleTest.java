@@ -22,11 +22,11 @@ class ScreenRuleTest {
         String text = rule.board(List.of(new ScreenRule.Entry("Ada", 12), new ScreenRule.Entry("Bo", 7),
                 new ScreenRule.Entry("Cy", 3), new ScreenRule.Entry("Di", 2)), List.of(new ScreenRule.Entry("Bo", 4)));
         assertThat(text).startsWith("<red><bold>⚑ CAPTURE THE FLAG ⚑</bold></red>\n<gray>Most captures\n");
-        assertThat(text).contains("<gold>① <white>Ada <gray>— <yellow>12")
-                .contains("<gray>② <white>Bo <gray>— <yellow>7")
-                .contains("<#cd7f32>③ <white>Cy <gray>— <yellow>3")
-                .contains("<white>④ <white>Di <gray>— <yellow>2")
-                .contains("<aqua>This week\n<gold>① <white>Bo <gray>— <yellow>4");
+        assertThat(text).contains("<gold>① <white>Ada<gray>: <yellow>12")
+                .contains("<gray>② <white>Bo<gray>: <yellow>7")
+                .contains("<#cd7f32>③ <white>Cy<gray>: <yellow>3")
+                .contains("<white>④ <white>Di<gray>: <yellow>2")
+                .contains("<aqua>This week\n<gold>① <white>Bo<gray>: <yellow>4");
         assertThat(text).doesNotEndWith("\n");
     }
 

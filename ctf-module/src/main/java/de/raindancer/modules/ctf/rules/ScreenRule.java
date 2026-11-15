@@ -49,7 +49,7 @@ public final class ScreenRule implements ICtfRule {
     public String board(List<Entry> best, List<Entry> week) {
         StringBuilder out = new StringBuilder("<red><bold>⚑ CAPTURE THE FLAG ⚑</bold></red>\n<gray>Most captures\n");
         if (best.isEmpty()) {
-            out.append("<gray>Nobody yet — be the first!\n");
+            out.append("<gray>Nobody yet. Be the first.\n");
         }
         list(out, best);
         if (!week.isEmpty()) {
@@ -62,14 +62,14 @@ public final class ScreenRule implements ICtfRule {
     private static void list(StringBuilder out, List<Entry> entries) {
         for (int index = 0; index < entries.size() && index < PLACES.length; index++) {
             out.append(PLACES[index]).append(" <white>").append(MINI.escapeTags(entries.get(index).name()))
-                    .append(" <gray>— <yellow>").append(entries.get(index).value()).append("\n");
+                    .append("<gray>: <yellow>").append(entries.get(index).value()).append("\n");
         }
     }
 
     public String you(Own own) {
         StringBuilder out = new StringBuilder("<gold><bold>Your CTF record</bold></gold>");
         if (!own.played() && own.of() == 0) {
-            return out.append("\n<gray>No round played yet — <white>/ctf").toString();
+            return out.append("\n<gray>No round played yet. Use <white>/ctf").toString();
         }
         if (own.levels()) {
             out.append("\n<gray>Level <white>").append(own.level()).append(" <dark_gray>(").append(own.toNext())
@@ -84,7 +84,7 @@ public final class ScreenRule implements ICtfRule {
                 out.append("\n<gray>MVPs <white>").append(own.mvps());
             }
         } else {
-            out.append("\n<gray>No round played yet — <white>/ctf");
+            out.append("\n<gray>No round played yet. Use <white>/ctf");
         }
         if (own.of() > 0) {
             out.append("\n<gray>Challenges today <white>").append(own.challengesDone()).append("<dark_gray>/<white>")
@@ -98,9 +98,9 @@ public final class ScreenRule implements ICtfRule {
         switch (glance.phase()) {
             case WAITING -> out.append("\n<gray>Waiting for players\n<gray>In the lobby <white>").append(glance.lobby())
                     .append("</white><dark_gray>/<white>").append(glance.enough());
-            case COUNTDOWN -> out.append("\n<gray>Votes open — starts in <white>").append(glance.countdown())
+            case COUNTDOWN -> out.append("\n<gray>Votes open, starts in <white>").append(glance.countdown())
                     .append(" s\n<gray>In the lobby <white>").append(glance.lobby());
-            case PREPARING -> out.append("\n<gray>Building the map…");
+            case PREPARING -> out.append("\n<gray>Building the map");
             default -> {
                 out.append("\n<gray>Map <white>").append(MINI.escapeTags(glance.map())).append(" <dark_gray>· <white>")
                         .append(MINI.escapeTags(glance.type()));
@@ -114,7 +114,7 @@ public final class ScreenRule implements ICtfRule {
                     }
                 }
                 switch (glance.phase()) {
-                    case OVERTIME -> out.append("\n<red>Overtime — the next point wins");
+                    case OVERTIME -> out.append("\n<red>Overtime: the next point wins");
                     case OVER -> out.append("\n<gray>Round over");
                     default -> out.append("\n<gray>Time left <white>")
                             .append(Times.brief(Duration.ofMillis(Math.max(0, glance.leftMillis()))));

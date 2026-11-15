@@ -119,7 +119,7 @@ public final class ProgressService implements ICtfService {
                 .description("Play a hundred rounds.").goal(100).points(50));
         define(Achievement.builder(owner, PARKOUR).title("Free Runner").icon(Material.LEATHER_BOOTS)
                 .description("Finish the lobby parkour.").points(10));
-        define(Achievement.builder(owner, CLUTCH).title("Denied!").icon(Material.BARRIER)
+        define(Achievement.builder(owner, CLUTCH).title("Denied").icon(Material.BARRIER)
                 .description("Stop a carrier a few steps from scoring.").points(20));
     }
 

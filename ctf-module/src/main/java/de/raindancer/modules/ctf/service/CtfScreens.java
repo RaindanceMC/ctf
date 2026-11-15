@@ -56,7 +56,7 @@ public final class CtfScreens {
         screens.register(owner, ScreenKind.everyone("ctf-top", "CTF leaderboard",
                 "The most captures, and the best of this week.", Material.GOLDEN_HELMET, () -> board()));
         screens.register(owner, ScreenKind.everyone("ctf-round", "CTF round",
-                "The round that is running — map, score, time left — or the lobby.", Material.WHITE_BANNER,
+                "The round that is running (map, score, time left) or the lobby.", Material.WHITE_BANNER,
                 () -> MINI.deserialize(rule.round(rounds.glance()))));
     }
 

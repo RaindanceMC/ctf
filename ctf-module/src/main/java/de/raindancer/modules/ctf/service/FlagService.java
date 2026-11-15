@@ -118,7 +118,7 @@ public final class FlagService implements ICtfService {
         Location spot = new Location(world, at.x(), at.y(), at.z());
         Material banner = bannerOf(round, flag);
         Component label = MiniMessage.miniMessage().deserialize(flag.state() == Flag.State.HOME
-                ? nameOf(round, flag) : nameOf(round, flag) + " <gray>— dropped");
+                ? nameOf(round, flag) : nameOf(round, flag) + " <gray>(dropped)");
         Scheduling.region(plugin, spot, () -> {
             List<UUID> ids = new ArrayList<>();
             if (flag.state() == Flag.State.HOME) {
