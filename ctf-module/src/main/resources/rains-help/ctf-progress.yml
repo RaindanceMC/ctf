@@ -2,7 +2,7 @@ id: ctf-progress
 title: CTF Progress and Rewards
 summary: Experience, levels, trails and fireworks, daily challenges, achievements, leaderboards and money.
 intro: |
-  Playing earns things: experience, shiny trails, a leaderboard rank to brag about. I make no promises about the bragging.
+  Playing earns experience, flag trails, capture fireworks and a place on the leaderboards.
 icon: NETHER_STAR
 category: Progress & rewards
 order: 12
@@ -19,7 +19,7 @@ sections:
     title: Levels
     when: ctf:levels
     text: |
-      You earn experience: <white>30</white> for a capture, <white>15</white> for a return, <white>5</white> per kill, <white>10</white> for stopping a carrier, <white>50</white> for winning a round and <white>20</white> for simply playing one. Level 2 needs 100, level 3 needs 300, level 4 needs 600 — each level a hundred more than the one before.
+      You earn experience: <white>30</white> for a capture, <white>15</white> for a return, <white>5</white> per kill, <white>10</white> for stopping a carrier, <white>50</white> for winning a round and <white>20</white> for playing one. Level 2 needs 100, level 3 needs 300, level 4 needs 600. Each level needs a hundred more than the one before.
   - question: What do levels unlock?
     title: Unlocks
     when: ctf:levels
@@ -29,12 +29,12 @@ sections:
     title: Challenges
     when: ctf:challenges
     text: |
-      {run:/ctf challenges} shows today's <white>{setting:ctf:challenges-per-day}</white> challenges — things like capturing flags, returning them, taking down carriers, winning rounds, taking power-ups, or a class-specific one such as capturing as a Scout. Each pays experience when done, and new ones appear every day. Progress is counted across rounds.
+      {run:/ctf challenges} shows today's <white>{setting:ctf:challenges-per-day}</white> challenges, for example capturing flags, returning them, taking down carriers, winning rounds, taking power-ups, or a class-specific one such as capturing as a Scout. Each pays experience when done, and new ones appear every day. Progress is counted across rounds.
   - question: What are achievements?
     title: Achievements
     when: ctf:achievements
     text: |
-      First Capture, Hat Trick (three captures in a round), Speed Demon (capture within twenty seconds of taking it), The Wall (five returns in a round), Unstoppable (seven kills without dying), Most Valuable, Clean Sheet (win without your flag ever leaving home), Veteran (a hundred rounds), Free Runner (finish the lobby parkour) and Denied! (stop a carrier a few steps from scoring).
+      First Capture, Hat Trick (three captures in a round), Speed Demon (capture within twenty seconds of taking it), The Wall (five returns in a round), Unstoppable (seven kills without dying), Most Valuable, Clean Sheet (win without your flag ever leaving home), Veteran (a hundred rounds), Free Runner (finish the lobby parkour) and Denied (stop a carrier a few steps from scoring).
   - question: Who is the best?
     title: Leaderboards
     text: |

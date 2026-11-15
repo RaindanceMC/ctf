@@ -2,7 +2,7 @@ id: ctf-staff
 title: CTF for Staff
 summary: Maps, the lobby, the hub, leaderboards, starting and stopping rounds.
 intro: |
-  Running Capture the Flag is mostly building maps and then watching other people enjoy them. This is the toolbox.
+  The commands and menus for running Capture the Flag.
 icon: COMMAND_BLOCK
 category: Staff
 order: 14
@@ -27,7 +27,7 @@ sections:
   - question: Where is the lobby and the hub?
     title: Lobby and hub
     text: |
-      The staff menu sets the lobby spawn, the parkour start, checkpoints and finish, and the throwing line. A hub is a schematic with a <white>hub.yml</white> in the hub folder: {cmd:/ctf admin hub build} (or <white>rebuild</white>) builds it in world <white>{setting:ctf:hub-world}</white>. Maps are built in world <white>{setting:ctf:world}</white> — use an empty world made for it.
+      The staff menu sets the lobby spawn, the parkour start, checkpoints and finish, and the throwing line. A hub is a schematic with a <white>hub.yml</white> in the hub folder: {cmd:/ctf admin hub build} (or <white>rebuild</white>) builds it in world <white>{setting:ctf:hub-world}</white>. Maps are built in world <white>{setting:ctf:world}</white>. Use an empty world made for it.
   - question: Leaderboards?
     title: Boards
     text: |

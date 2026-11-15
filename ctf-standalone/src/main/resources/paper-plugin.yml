@@ -1,4 +1,4 @@
-# Same shape as every other standalone here — see rtp-standalone's copy for why each line matters.
+# Same shape as every other standalone here, see rtp-standalone's copy for why each line matters.
 name: ${plugin.name}
 version: '${plugin.version}'
 main: de.raindancer.modules.wrapper.ModulePlugin

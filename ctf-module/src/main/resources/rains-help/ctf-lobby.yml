@@ -2,7 +2,7 @@ id: ctf-lobby
 title: CTF Lobby and Hub
 summary: "While you wait: parkour, the flag throwing range, and the hub where everybody lands."
 intro: |
-  Waiting for a round is boring, so the lobby gives you things to do. Mostly falling off ledges.
+  The lobby has things to do while you wait for a round.
 icon: OAK_DOOR
 category: Games
 order: 13
@@ -28,4 +28,4 @@ sections:
   - question: What if I fall off the hub?
     title: Falling
     text: |
-      You are put back where everybody lands (or at your last parkour checkpoint). Nothing is lost.
+      You are put back where everybody lands, or at your last parkour checkpoint. Nothing is lost.
