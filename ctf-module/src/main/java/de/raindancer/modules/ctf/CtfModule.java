@@ -95,7 +95,6 @@ public final class CtfModule implements FlexModule {
         CtfSettings now = settings.current();
         context.core().messages().defineFrom(CtfModule.class.getResourceAsStream("messages.yml"),
                 context.chat().brand()::chatPrefix);
-        context.core().messages().seriousFrom(CtfModule.class.getResourceAsStream("messages-serious.yml"));
         int registered = PermissionNodes.register(server);
         if (registered > 0) {
             log.info("{} permission(s) registered.", registered);
