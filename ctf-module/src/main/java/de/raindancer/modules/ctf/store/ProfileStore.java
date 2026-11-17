@@ -21,6 +21,16 @@ public final class ProfileStore {
         public static Profile defaults() {
             return new Profile(Trail.TEAM, CaptureShow.BURST, null);
         }
+
+        /** Whether a trail or firework other than the defaults is picked. */
+        public boolean dressed() {
+            return trail != Trail.TEAM || show != CaptureShow.BURST;
+        }
+
+        /** The looks back to the defaults; what is unlocked stays unlocked, the last class stays. */
+        public Profile plain() {
+            return new Profile(Trail.TEAM, CaptureShow.BURST, lastClass);
+        }
     }
 
     private final Database database;
