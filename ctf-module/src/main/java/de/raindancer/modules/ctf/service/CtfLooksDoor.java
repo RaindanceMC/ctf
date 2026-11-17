@@ -13,13 +13,21 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-/** The flag trail and capture fireworks as a door on the server's cosmetics page, beside everything else worn. */
+/**
+ * The flag trail and capture fireworks as a door on the server's cosmetics page, beside everything else worn. Only on
+ * a server of Capture the Flag's own: on an SMP that also has it, the looks stay in the Capture the Flag menu.
+ */
 public final class CtfLooksDoor implements CosmeticDoor {
 
     private final Supplier<CtfServices> services;
 
     public CtfLooksDoor(Supplier<CtfServices> services) {
         this.services = services;
+    }
+
+    /** Whether the door belongs on this server's cosmetics page. */
+    public static boolean onCosmeticsPage(de.raindancer.modules.ctf.CtfSettings settings) {
+        return settings.lobbyOnJoin();
     }
 
     @Override

@@ -22,7 +22,7 @@
     <properties>
         <rainscore.version>2.102.0</rainscore.version>
         <modules-wrapper.version>1.11.0</modules-wrapper.version>
-        <ctf-module.version>0.13.0</ctf-module.version>
+        <ctf-module.version>0.13.1</ctf-module.version>
     </properties>
 
     <modules>

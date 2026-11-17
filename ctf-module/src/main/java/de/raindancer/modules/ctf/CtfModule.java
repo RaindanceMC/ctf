@@ -71,7 +71,7 @@ import java.util.UUID;
  */
 public final class CtfModule implements FlexModule {
 
-    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.13.0")
+    private static final ModuleInfo INFO = ModuleInfo.of("ctf", "Capture the Flag", "0.13.1")
             .describedAs("Capture the Flag with classes, power-ups, twists, votes, awards, levels and challenges")
             .by("Raindancer118");
 
@@ -258,11 +258,19 @@ public final class CtfModule implements FlexModule {
                 context.chat().brand(), context.core(), settings::current, maps, arena, setup, lobby, hub, rounds, flags,
                 roles, announcer, progress, parties, votes, spectators, stats, boards, screens);
         built[0] = services;
-        // The trail and fireworks are also a door on the cosmetics page, where everything worn is put on.
+        // The trail and fireworks are also a door on the cosmetics page, on a server of Capture the Flag's own.
         try {
             de.raindancer.core.ui.cosmetic.CosmeticDoor looks =
                     new de.raindancer.modules.ctf.service.CtfLooksDoor(() -> built[0]);
-            de.raindancer.core.ui.cosmetic.CosmeticDoors.provide(context.plugin(), looks);
+            java.util.function.Consumer<CtfSettings> offer = fresh -> {
+                if (de.raindancer.modules.ctf.service.CtfLooksDoor.onCosmeticsPage(fresh)) {
+                    de.raindancer.core.ui.cosmetic.CosmeticDoors.provide(context.plugin(), looks);
+                } else {
+                    de.raindancer.core.ui.cosmetic.CosmeticDoors.retract(looks);
+                }
+            };
+            offer.accept(settings.current());
+            settings.onChange(offer);
             context.closeWith(() -> de.raindancer.core.ui.cosmetic.CosmeticDoors.retract(looks));
         } catch (LinkageError olderCore) {
             log.info("RainsCore is older than 2.34.0: the looks stay in the Capture the Flag menu only.");
